@@ -249,9 +249,9 @@ class extends Component {
     </x-header>
 
     <div class="space-y-5">
-        {{-- Stats: satu baris compact --}}
-        <div class="flex flex-wrap gap-4">
-            <div class="min-w-[7.5rem] rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
+        {{-- Stats --}}
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(7.5rem,auto)_minmax(9rem,auto)_1fr]">
+            <div class="rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
                 <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-base-content/45">Total</p>
                 <p class="mt-2 text-2xl font-bold leading-none tabular-nums">{{ $stats['total'] }}</p>
             </div>
@@ -270,12 +270,12 @@ class extends Component {
                 </div>
             </div>
 
-            <div class="min-w-0 flex-1 basis-full rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm sm:basis-auto">
+            <div class="rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm sm:col-span-2 xl:col-span-1">
                 <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-base-content/45">Gereja lokal</p>
                 @if ($stats['churches']->isEmpty())
                     <p class="mt-2 text-xs text-base-content/50">Belum ada data.</p>
                 @else
-                    <div class="mt-2.5 flex flex-wrap gap-2">
+                    <div class="mt-2.5 flex flex-wrap gap-2.5">
                         @foreach ($stats['churches'] as $church)
                             <button
                                 type="button"
@@ -291,34 +291,32 @@ class extends Component {
             </div>
         </div>
 
-        {{-- Filter --}}
-        <div class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
-                <div class="grid min-w-0 flex-1 grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <select class="select select-bordered min-h-11 w-full" wire:model.live="filterGereja" aria-label="Filter gereja">
-                        @foreach ($gerejaOptions as $option)
-                            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
-                        @endforeach
-                    </select>
+        {{-- Filter: rata kanan, gap longgar --}}
+        <div class="rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
+            <div class="flex flex-wrap items-center justify-end gap-3">
+                <select class="select select-bordered min-h-11 w-full sm:w-44" wire:model.live="filterGereja" aria-label="Filter gereja">
+                    @foreach ($gerejaOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
 
-                    <select class="select select-bordered min-h-11 w-full" wire:model.live="filterGender" aria-label="Filter gender">
-                        @foreach ($genderOptions as $option)
-                            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
-                        @endforeach
-                    </select>
+                <select class="select select-bordered min-h-11 w-full sm:w-40" wire:model.live="filterGender" aria-label="Filter gender">
+                    @foreach ($genderOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
 
-                    <select class="select select-bordered min-h-11 w-full" wire:model.live="filterTeam" aria-label="Filter tim">
-                        @foreach ($teamFilterOptions as $option)
-                            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
-                        @endforeach
-                    </select>
+                <select class="select select-bordered min-h-11 w-full sm:w-36" wire:model.live="filterTeam" aria-label="Filter tim">
+                    @foreach ($teamFilterOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
 
-                    <select class="select select-bordered min-h-11 w-full" wire:model.live="sortBy" aria-label="Urutkan">
-                        @foreach ($sortOptions as $option)
-                            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <select class="select select-bordered min-h-11 w-full sm:w-36" wire:model.live="sortBy" aria-label="Urutkan">
+                    @foreach ($sortOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
 
                 <button
                     type="button"
