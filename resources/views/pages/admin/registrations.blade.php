@@ -18,6 +18,14 @@ class extends Component {
 
     public string $search = '';
 
+    public string $filterGereja = '';
+
+    public string $filterGender = '';
+
+    public string $filterTeam = '';
+
+    public string $sortBy = 'terbaru';
+
     public ?string $previewUrl = null;
 
     public string $previewName = '';
@@ -36,6 +44,12 @@ class extends Component {
         session()->regenerateToken();
 
         $this->redirect(route('login'), navigate: true);
+    }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'filterGereja', 'filterGender', 'filterTeam', 'sortBy']);
+        $this->sortBy = 'terbaru';
     }
 
     public function assignTeam(int $id, string $team, TeamAssignmentService $teams): void
@@ -87,9 +101,22 @@ class extends Component {
         $this->success('Pendaftar dihapus.', position: 'toast-bottom');
     }
 
+    public function whatsappLink(string $whatsapp): string
+    {
+        $digits = preg_replace('/\D+/', '', $whatsapp) ?? '';
+
+        if (str_starts_with($digits, '0')) {
+            $digits = '62'.substr($digits, 1);
+        } elseif (! str_starts_with($digits, '62') && $digits !== '') {
+            $digits = '62'.$digits;
+        }
+
+        return 'https://wa.me/'.$digits;
+    }
+
     public function registrations(): Collection
     {
-        return FellowRegistration::query()
+        $query = FellowRegistration::query()
             ->when($this->search !== '', function ($query) {
                 $term = '%'.$this->search.'%';
 
@@ -99,7 +126,22 @@ class extends Component {
                         ->orWhere('gereja_lokal', 'like', $term);
                 });
             })
-            ->latest()
+            ->when($this->filterGereja !== '', fn ($query) => $query->where('gereja_lokal', $this->filterGereja))
+            ->when($this->filterGender !== '', fn ($query) => $query->where('gender', $this->filterGender))
+            ->when($this->filterTeam === 'none', fn ($query) => $query->whereNull('team'))
+            ->when($this->filterTeam !== '' && $this->filterTeam !== 'none', fn ($query) => $query->where('team', (int) $this->filterTeam));
+
+        $query = match ($this->sortBy) {
+            'nama_asc' => $query->orderBy('nama'),
+            'nama_desc' => $query->orderByDesc('nama'),
+            'umur_asc' => $query->orderBy('umur')->orderBy('nama'),
+            'umur_desc' => $query->orderByDesc('umur')->orderBy('nama'),
+            'gereja_asc' => $query->orderBy('gereja_lokal')->orderBy('nama'),
+            'gender_asc' => $query->orderBy('gender')->orderBy('nama'),
+            default => $query->latest(),
+        };
+
+        return $query
             ->get()
             ->map(function (FellowRegistration $item) {
                 return [
@@ -108,6 +150,7 @@ class extends Component {
                     'gender' => $item->gender,
                     'umur' => $item->umur,
                     'whatsapp' => $item->whatsapp,
+                    'whatsapp_link' => $this->whatsappLink($item->whatsapp),
                     'gereja_lokal' => $item->gereja_lokal,
                     'team' => $item->team,
                     'team_label' => $item->teamLabel(),
@@ -117,11 +160,73 @@ class extends Component {
             });
     }
 
+    /**
+     * @return array{total: int, male: int, female: int, churches: Collection<int, array{name: string, count: int}>}
+     */
+    public function stats(): array
+    {
+        $all = FellowRegistration::query()->get(['gender', 'gereja_lokal']);
+
+        $churches = $all
+            ->groupBy('gereja_lokal')
+            ->map(fn (Collection $group, string $name) => [
+                'name' => $name,
+                'count' => $group->count(),
+            ])
+            ->sortByDesc('count')
+            ->values();
+
+        return [
+            'total' => $all->count(),
+            'male' => $all->where('gender', 'Laki-laki')->count(),
+            'female' => $all->where('gender', 'Perempuan')->count(),
+            'churches' => $churches,
+        ];
+    }
+
     public function with(TeamAssignmentService $teams): array
     {
+        $gerejaOptions = [
+            ['id' => '', 'name' => 'Semua gereja'],
+            ['id' => 'Central Park', 'name' => 'Central Park'],
+            ['id' => 'Puri', 'name' => 'Puri'],
+            ['id' => 'Gancit', 'name' => 'Gancit'],
+            ['id' => 'Kelapa Gading', 'name' => 'Kelapa Gading'],
+            ['id' => 'Pluit', 'name' => 'Pluit'],
+        ];
+
+        $genderOptions = [
+            ['id' => '', 'name' => 'Semua gender'],
+            ['id' => 'Laki-laki', 'name' => 'Pria'],
+            ['id' => 'Perempuan', 'name' => 'Wanita'],
+        ];
+
+        $sortOptions = [
+            ['id' => 'terbaru', 'name' => 'Terbaru'],
+            ['id' => 'nama_asc', 'name' => 'Nama A–Z'],
+            ['id' => 'nama_desc', 'name' => 'Nama Z–A'],
+            ['id' => 'umur_asc', 'name' => 'Umur termuda'],
+            ['id' => 'umur_desc', 'name' => 'Umur tertua'],
+            ['id' => 'gereja_asc', 'name' => 'Gereja A–Z'],
+            ['id' => 'gender_asc', 'name' => 'Gender'],
+        ];
+
+        $teamFilterOptions = array_merge(
+            [['id' => '', 'name' => 'Semua tim'], ['id' => 'none', 'name' => 'Belum ada tim']],
+            array_values(array_filter(
+                $teams->teamOptions(),
+                fn (array $option) => $option['id'] !== '',
+            )),
+        );
+
         return [
             'rows' => $this->registrations(),
+            'stats' => $this->stats(),
             'teamOptions' => $teams->teamOptions(),
+            'gerejaOptions' => $gerejaOptions,
+            'genderOptions' => $genderOptions,
+            'sortOptions' => $sortOptions,
+            'teamFilterOptions' => $teamFilterOptions,
         ];
     }
 }; ?>
@@ -137,12 +242,93 @@ class extends Component {
         </x-slot:actions>
     </x-header>
 
+    <div class="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div class="rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Total</p>
+            <p class="mt-1 text-3xl font-bold tabular-nums">{{ $stats['total'] }}</p>
+            <p class="mt-1 text-xs text-base-content/60">pendaftar</p>
+        </div>
+
+        <div class="rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Gender</p>
+            <div class="mt-2 flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <x-gender-icon gender="Laki-laki" size="sm" />
+                    <span class="text-xl font-bold tabular-nums text-blue-600">{{ $stats['male'] }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <x-gender-icon gender="Perempuan" size="sm" />
+                    <span class="text-xl font-bold tabular-nums text-red-600">{{ $stats['female'] }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-2 rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Gereja lokal</p>
+            @if ($stats['churches']->isEmpty())
+                <p class="mt-2 text-sm text-base-content/50">Belum ada data.</p>
+            @else
+                <div class="mt-2 flex flex-wrap gap-2">
+                    @foreach ($stats['churches'] as $church)
+                        <button
+                            type="button"
+                            class="inline-flex items-center gap-2 rounded-xl border border-base-300 bg-base-200/70 px-3 py-1.5 text-sm transition hover:border-primary/40 hover:bg-primary/5 {{ $filterGereja === $church['name'] ? 'border-primary/50 bg-primary/10' : '' }}"
+                            wire:click="$set('filterGereja', '{{ $filterGereja === $church['name'] ? '' : $church['name'] }}')"
+                        >
+                            <span class="font-medium">{{ $church['name'] }}</span>
+                            <span class="rounded-lg bg-base-100 px-1.5 py-0.5 text-xs font-bold tabular-nums">{{ $church['count'] }}</span>
+                        </button>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <x-card shadow class="mb-4">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <x-select
+                label="Filter gereja"
+                wire:model.live="filterGereja"
+                :options="$gerejaOptions"
+                placeholder="Semua gereja"
+            />
+            <x-select
+                label="Filter gender"
+                wire:model.live="filterGender"
+                :options="$genderOptions"
+                placeholder="Semua gender"
+            />
+            <x-select
+                label="Filter tim"
+                wire:model.live="filterTeam"
+                :options="$teamFilterOptions"
+                placeholder="Semua tim"
+            />
+            <x-select
+                label="Sort by"
+                wire:model.live="sortBy"
+                :options="$sortOptions"
+            />
+            <div class="flex items-end">
+                <x-button
+                    label="Reset"
+                    class="btn-ghost w-full"
+                    icon="o-arrow-path"
+                    wire:click="resetFilters"
+                />
+            </div>
+        </div>
+    </x-card>
+
     <x-card shadow>
         @if ($rows->isEmpty())
             <div class="py-10 text-center text-base-content/60">
-                Belum ada pendaftar.
+                Belum ada pendaftar{{ ($search || $filterGereja || $filterGender || $filterTeam) ? ' untuk filter ini' : '' }}.
             </div>
         @else
+            <div class="mb-3 text-sm text-base-content/60">
+                Menampilkan <strong class="text-base-content">{{ $rows->count() }}</strong> pendaftar
+            </div>
             <div class="overflow-x-auto">
                 <table class="table table-sm">
                     <thead>
@@ -167,8 +353,19 @@ class extends Component {
                                 <td class="hidden md:table-cell">
                                     <x-gender-icon :gender="$row['gender']" />
                                 </td>
-                                <td>{{ $row['umur'] }}</td>
-                                <td class="whitespace-nowrap">{{ $row['whatsapp'] }}</td>
+                                <td class="tabular-nums">{{ $row['umur'] }}</td>
+                                <td class="whitespace-nowrap">
+                                    <a
+                                        href="{{ $row['whatsapp_link'] }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 hover:underline"
+                                        title="Chat WhatsApp"
+                                    >
+                                        <x-icon name="o-chat-bubble-left-right" class="h-4 w-4" />
+                                        {{ $row['whatsapp'] }}
+                                    </a>
+                                </td>
                                 <td class="hidden sm:table-cell">{{ $row['gereja_lokal'] }}</td>
                                 <td class="min-w-36">
                                     <select
