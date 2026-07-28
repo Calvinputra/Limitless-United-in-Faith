@@ -145,31 +145,31 @@ class extends Component {
 
         {{-- GEREJA --}}
         <x-card title="Gereja lokal" subtitle="Key disimpan · Value ditampilkan" class="!p-4" shadow>
-            <div class="space-y-2">
-                <div class="hidden grid-cols-[1fr_1.3fr_2rem] gap-2 px-1 text-xs font-medium text-base-content/50 sm:grid">
-                    <span>Key</span>
-                    <span>Value</span>
-                    <span></span>
-                </div>
+            <div class="mb-1.5 flex items-center gap-2 px-0.5 text-[0.7rem] font-medium text-base-content/50">
+                <span class="min-w-0 flex-1">Key</span>
+                <span class="min-w-0 flex-[1.2]">Value</span>
+                <span class="w-8 shrink-0"></span>
+            </div>
 
+            <div class="space-y-1.5">
                 @foreach ($items as $index => $item)
-                    <div wire:key="gereja-item-{{ $index }}" class="grid grid-cols-1 gap-1.5 sm:grid-cols-[1fr_1.3fr_2rem] sm:items-center">
+                    <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-2">
                         <input
                             type="text"
-                            class="input input-bordered input-sm w-full"
+                            class="input input-bordered input-sm min-w-0 flex-1"
                             placeholder="key"
                             wire:model="items.{{ $index }}.key"
                         >
                         <input
                             type="text"
-                            class="input input-bordered input-sm w-full"
+                            class="input input-bordered input-sm min-w-0 flex-[1.2]"
                             placeholder="value"
                             wire:model="items.{{ $index }}.value"
                             required
                         >
                         <button
                             type="button"
-                            class="btn btn-ghost btn-xs text-error justify-self-end sm:justify-self-center"
+                            class="btn btn-ghost btn-xs h-8 w-8 shrink-0 p-0 text-error"
                             wire:click="removeItem({{ $index }})"
                             title="Hapus"
                         >
