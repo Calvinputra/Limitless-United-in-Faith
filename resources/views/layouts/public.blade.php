@@ -20,7 +20,7 @@
                 init() {
                     const audio = this.$refs.bgm;
                     if (!audio) return;
-                    audio.volume = 0.45;
+                    audio.volume = 0.32;
                     window.limitlessMusic = {
                         toggle: () => this.toggle(),
                         start: () => this.play(),
@@ -75,7 +75,7 @@
                 @play="playing = true"
                 @pause="playing = false"
             >
-                <source src="{{ asset('audio/limitless-happy.mp3') }}?v=1" type="audio/mpeg">
+                <source src="{{ asset('audio/limitless-cozy.mp3') }}?v=2" type="audio/mpeg">
             </audio>
 
             <button

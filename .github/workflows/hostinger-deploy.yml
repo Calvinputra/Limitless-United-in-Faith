@@ -1,0 +1,28 @@
+name: Hostinger Auto Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  trigger-hostinger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Hostinger webhook
+        env:
+          HOSTINGER_WEBHOOK_URL: ${{ secrets.HOSTINGER_WEBHOOK_URL }}
+        run: |
+          if [ -z "$HOSTINGER_WEBHOOK_URL" ]; then
+            echo "HOSTINGER_WEBHOOK_URL secret belum di-set."
+            echo "Setelah Git dihubungkan di hPanel, salin Webhook URL lalu simpan sebagai secret repo ini."
+            exit 0
+          fi
+
+          code=$(curl -s -o /tmp/hostinger-deploy-body.txt -w "%{http_code}" -X POST "$HOSTINGER_WEBHOOK_URL")
+          echo "Hostinger response HTTP $code"
+          cat /tmp/hostinger-deploy-body.txt || true
+
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "Deploy trigger gagal."
+            exit 1
+          fi

@@ -144,38 +144,36 @@
                                 Gender <span class="text-error">*</span>
                             </p>
                             <div
-                                class="flex gap-2.5"
+                                class="grid grid-cols-2 gap-2.5"
                                 role="radiogroup"
                                 aria-label="Pilih gender"
                             >
                                 <button
                                     type="button"
                                     role="radio"
-                                    aria-label="Pria"
                                     aria-checked="{{ $gender === 'Laki-laki' ? 'true' : 'false' }}"
-                                    title="Pria"
                                     wire:click="$set('gender', 'Laki-laki')"
                                     class="gender-pick gender-pick--male {{ $gender === 'Laki-laki' ? 'is-active' : '' }}"
                                 >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-7" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-5 shrink-0" aria-hidden="true">
                                         <circle cx="10" cy="14" r="5.2" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.2 9.8 20 4M15.2 4H20v4.8" />
                                     </svg>
+                                    <span>Pria</span>
                                 </button>
 
                                 <button
                                     type="button"
                                     role="radio"
-                                    aria-label="Wanita"
                                     aria-checked="{{ $gender === 'Perempuan' ? 'true' : 'false' }}"
-                                    title="Wanita"
                                     wire:click="$set('gender', 'Perempuan')"
                                     class="gender-pick gender-pick--female {{ $gender === 'Perempuan' ? 'is-active' : '' }}"
                                 >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-7" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-5 shrink-0" aria-hidden="true">
                                         <circle cx="12" cy="9" r="5.2" />
                                         <path stroke-linecap="round" d="M12 14.2V21M9.2 18.2h5.6" />
                                     </svg>
+                                    <span>Wanita</span>
                                 </button>
                             </div>
                             @error('gender')
