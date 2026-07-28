@@ -171,10 +171,10 @@ class extends Component {
         </x-slot:middle>
     </x-header>
 
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
+    <div class="mb-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
         <x-card title="Pengaturan" subtitle="Jumlah tim aktif" class="xl:col-span-1" shadow>
-            <div class="flex flex-col sm:flex-row gap-3 items-end">
-                <div class="flex-1 w-full">
+            <div class="flex flex-col items-end gap-4 sm:flex-row">
+                <div class="w-full flex-1">
                     <x-input
                         label="Berapa tim?"
                         type="number"
@@ -187,18 +187,18 @@ class extends Component {
                 <x-button label="Simpan" class="btn-primary" icon="o-check" wire:click="saveTeamCount" spinner="saveTeamCount" />
             </div>
 
-            <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div class="rounded-xl bg-base-200 p-3">
+            <div class="mt-5 grid grid-cols-2 gap-4 text-sm">
+                <div class="rounded-xl bg-base-200 p-4">
                     <p class="opacity-60">Total pendaftar</p>
-                    <p class="text-2xl font-bold">{{ $total }}</p>
+                    <p class="mt-1 text-2xl font-bold">{{ $total }}</p>
                 </div>
-                <div class="rounded-xl bg-base-200 p-3">
+                <div class="rounded-xl bg-base-200 p-4">
                     <p class="opacity-60">Belum punya tim</p>
-                    <p class="text-2xl font-bold">{{ $unassignedCount }}</p>
+                    <p class="mt-1 text-2xl font-bold">{{ $unassignedCount }}</p>
                 </div>
             </div>
 
-            <div class="mt-4 flex flex-col sm:flex-row gap-2">
+            <div class="mt-5 flex flex-col gap-3 sm:flex-row">
                 <x-button
                     label="Randomize semua"
                     class="btn-secondary flex-1"
@@ -220,17 +220,17 @@ class extends Component {
 
         <x-card title="Ringkasan tim" subtitle="Jumlah anggota per tim" class="xl:col-span-2" shadow>
             <div @class([
-                'grid gap-3',
+                'grid gap-4',
                 'grid-cols-2',
                 'md:grid-cols-2' => $teamCount <= 2,
                 'md:grid-cols-3' => $teamCount === 3,
                 'md:grid-cols-4' => $teamCount >= 4,
             ])>
                 @foreach ($summaries as $summary)
-                    <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                    <div class="rounded-xl border border-base-300 bg-base-100 p-4">
                         <p class="font-semibold text-primary">Tim {{ $summary['team'] }}</p>
-                        <p class="text-2xl font-bold mt-1">{{ $summary['count'] }}</p>
-                        <p class="text-xs opacity-60 mt-1">anggota</p>
+                        <p class="mt-2 text-2xl font-bold">{{ $summary['count'] }}</p>
+                        <p class="mt-1 text-xs opacity-60">anggota</p>
                     </div>
                 @endforeach
             </div>
@@ -244,7 +244,7 @@ class extends Component {
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="table table-sm">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Nama</th>
@@ -256,16 +256,16 @@ class extends Component {
                     </thead>
                     <tbody>
                         @foreach ($rows as $row)
-                            <tr wire:key="member-{{ $row['id'] }}">
-                                <td class="font-medium">{{ $row['nama'] }}</td>
-                                <td class="hidden sm:table-cell">{{ $row['gereja_label'] }}</td>
-                                <td>
+                            <tr wire:key="member-{{ $row['id'] }}" class="align-middle">
+                                <td class="py-4 font-medium">{{ $row['nama'] }}</td>
+                                <td class="hidden py-4 sm:table-cell">{{ $row['gereja_label'] }}</td>
+                                <td class="py-4">
                                     <x-gender-icon :gender="$row['gender']" />
                                 </td>
-                                <td class="tabular-nums">{{ $row['umur'] }}</td>
-                                <td class="min-w-44">
+                                <td class="py-4 tabular-nums">{{ $row['umur'] }}</td>
+                                <td class="min-w-44 py-4">
                                     <select
-                                        class="select select-bordered select-sm w-full max-w-xs"
+                                        class="select select-bordered w-full max-w-xs"
                                         wire:change="assignTeam({{ $row['id'] }}, $event.target.value)"
                                     >
                                         @foreach ($teamOptions as $option)
@@ -287,7 +287,7 @@ class extends Component {
     </x-card>
 
     <div @class([
-        'mt-6 grid grid-cols-1 gap-4',
+        'mt-6 grid grid-cols-1 gap-5',
         'md:grid-cols-2',
         'xl:grid-cols-2' => $teamCount <= 2,
         'xl:grid-cols-3' => $teamCount >= 3,
@@ -297,12 +297,12 @@ class extends Component {
                 @if ($summary['members']->isEmpty())
                     <p class="text-sm opacity-60">Belum ada anggota.</p>
                 @else
-                    <ul class="space-y-2">
+                    <ul class="space-y-3">
                         @foreach ($summary['members'] as $member)
-                            <li class="flex items-center justify-between gap-2 rounded-lg bg-base-200 px-3 py-2">
+                            <li class="flex items-center justify-between gap-3 rounded-xl bg-base-200 px-4 py-3">
                                 <div>
                                     <p class="font-medium leading-tight">{{ $member->nama }}</p>
-                                    <p class="text-xs opacity-60">{{ \App\Services\GerejaOptionService::label($member->gereja_lokal) }} · {{ $member->umur }} th</p>
+                                    <p class="mt-0.5 text-xs opacity-60">{{ \App\Services\GerejaOptionService::label($member->gereja_lokal) }} · {{ $member->umur }} th</p>
                                 </div>
                                 <x-gender-icon :gender="$member->gender" size="sm" />
                             </li>

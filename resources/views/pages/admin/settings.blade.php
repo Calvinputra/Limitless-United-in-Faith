@@ -132,33 +132,33 @@ class extends Component {
 <div>
     <x-header title="Setting" subtitle="Pembayaran & gereja lokal." separator progress-indicator />
 
-    <div class="mx-auto max-w-3xl space-y-3">
+    <div class="mx-auto max-w-3xl space-y-5">
         {{-- PEMBAYARAN --}}
         <div class="overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm">
             <button
                 type="button"
-                class="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-base-200/50"
+                class="flex w-full items-center gap-4 px-5 py-5 text-left transition hover:bg-base-200/40 sm:px-6"
                 wire:click="togglePayment"
             >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
-                    <x-icon name="o-banknotes" class="h-4 w-4" />
+                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
+                    <x-icon name="o-banknotes" class="h-5 w-5" />
                 </span>
-                <span class="min-w-0 flex-1">
-                    <span class="block text-sm font-semibold text-base-content">Pembayaran</span>
-                    <span class="block truncate text-xs text-base-content/55">
+                <span class="min-w-0 flex-1 space-y-1">
+                    <span class="block text-base font-semibold text-base-content">Pembayaran</span>
+                    <span class="block truncate text-sm text-base-content/55">
                         {{ $bank_name }} · {{ $bank_account }} · {{ $bank_holder }} · {{ $amountLabel }}
                     </span>
                 </span>
                 <x-icon
                     name="{{ $openPayment ? 'o-chevron-up' : 'o-chevron-down' }}"
-                    class="h-4 w-4 shrink-0 text-base-content/40"
+                    class="h-5 w-5 shrink-0 text-base-content/40"
                 />
             </button>
 
             @if ($openPayment)
-                <div class="border-t border-base-300 px-4 py-4">
-                    <x-form wire:submit="savePayment" class="!gap-3">
-                        <div class="grid grid-cols-2 gap-3">
+                <div class="border-t border-base-300 px-5 py-5 sm:px-6">
+                    <x-form wire:submit="savePayment" class="!gap-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <x-input label="Bank" wire:model="bank_name" placeholder="BCA" required />
                             <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
                         </div>
@@ -171,9 +171,9 @@ class extends Component {
                             step="1000"
                             required
                         />
-                        <div class="flex gap-2 pt-1">
-                            <x-button label="Simpan" type="submit" class="btn-primary btn-sm" icon="o-check" spinner="savePayment" />
-                            <x-button label="Tutup" type="button" class="btn-ghost btn-sm" wire:click="$set('openPayment', false)" />
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <x-button label="Simpan" type="submit" class="btn-primary" icon="o-check" spinner="savePayment" />
+                            <x-button label="Tutup" type="button" class="btn-ghost" wire:click="$set('openPayment', false)" />
                         </div>
                     </x-form>
                 </div>
@@ -184,15 +184,15 @@ class extends Component {
         <div class="overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm">
             <button
                 type="button"
-                class="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-base-200/50"
+                class="flex w-full items-center gap-4 px-5 py-5 text-left transition hover:bg-base-200/40 sm:px-6"
                 wire:click="toggleGereja"
             >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                    <x-icon name="o-building-library" class="h-4 w-4" />
+                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                    <x-icon name="o-building-library" class="h-5 w-5" />
                 </span>
-                <span class="min-w-0 flex-1">
-                    <span class="block text-sm font-semibold text-base-content">Gereja lokal</span>
-                    <span class="block truncate text-xs text-base-content/55">
+                <span class="min-w-0 flex-1 space-y-1">
+                    <span class="block text-base font-semibold text-base-content">Gereja lokal</span>
+                    <span class="block truncate text-sm text-base-content/55">
                         {{ $gerejaCount }} opsi
                         @if ($gerejaPreview)
                             · {{ $gerejaPreview }}{{ $gerejaCount > 3 ? '…' : '' }}
@@ -201,25 +201,25 @@ class extends Component {
                 </span>
                 <x-icon
                     name="{{ $openGereja ? 'o-chevron-up' : 'o-chevron-down' }}"
-                    class="h-4 w-4 shrink-0 text-base-content/40"
+                    class="h-5 w-5 shrink-0 text-base-content/40"
                 />
             </button>
 
             @if ($openGereja)
-                <div class="border-t border-base-300 px-4 py-4">
-                    <div class="space-y-2.5">
+                <div class="border-t border-base-300 px-5 py-5 sm:px-6">
+                    <div class="space-y-3">
                         @foreach ($items as $index => $item)
-                            <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-2.5">
+                            <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-3">
                                 <input
                                     type="text"
-                                    class="input input-bordered input-sm min-h-10 min-w-0 flex-1"
+                                    class="input input-bordered min-h-11 min-w-0 flex-1"
                                     placeholder="Nama gereja"
                                     wire:model="items.{{ $index }}"
                                     required
                                 >
                                 <button
                                     type="button"
-                                    class="btn btn-ghost btn-sm h-10 w-10 shrink-0 p-0 text-error"
+                                    class="btn btn-ghost h-11 w-11 shrink-0 p-0 text-error"
                                     wire:click="removeItem({{ $index }})"
                                     title="Hapus"
                                 >
@@ -230,16 +230,16 @@ class extends Component {
                     </div>
 
                     @error('items')
-                        <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                        <p class="mt-3 text-sm text-error">{{ $message }}</p>
                     @enderror
                     @error('items.*')
-                        <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                        <p class="mt-3 text-sm text-error">{{ $message }}</p>
                     @enderror
 
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <x-button label="Tambah" icon="o-plus" class="btn-ghost btn-sm" wire:click="addItem" />
-                        <x-button label="Simpan" icon="o-check" class="btn-primary btn-sm" wire:click="saveGereja" spinner="saveGereja" />
-                        <x-button label="Tutup" class="btn-ghost btn-sm" wire:click="$set('openGereja', false)" />
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <x-button label="Tambah" icon="o-plus" class="btn-ghost" wire:click="addItem" />
+                        <x-button label="Simpan" icon="o-check" class="btn-primary" wire:click="saveGereja" spinner="saveGereja" />
+                        <x-button label="Tutup" class="btn-ghost" wire:click="$set('openGereja', false)" />
                     </div>
                 </div>
             @endif
