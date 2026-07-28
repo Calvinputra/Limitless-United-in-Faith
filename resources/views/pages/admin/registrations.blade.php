@@ -164,7 +164,9 @@ class extends Component {
                             <tr wire:key="reg-{{ $row['id'] }}">
                                 <td class="tabular-nums text-base-content/60">{{ $loop->iteration }}</td>
                                 <td class="font-medium">{{ $row['nama'] }}</td>
-                                <td class="hidden md:table-cell">{{ $row['gender'] }}</td>
+                                <td class="hidden md:table-cell">
+                                    <x-gender-icon :gender="$row['gender']" />
+                                </td>
                                 <td>{{ $row['umur'] }}</td>
                                 <td class="whitespace-nowrap">{{ $row['whatsapp'] }}</td>
                                 <td class="hidden sm:table-cell">{{ $row['gereja_lokal'] }}</td>

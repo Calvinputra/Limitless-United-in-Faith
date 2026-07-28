@@ -352,6 +352,28 @@ html {
     transform: translateY(-1px);
 }
 
+.gender-icon {
+    display: inline-flex;
+    width: 1.85rem;
+    height: 1.85rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.55rem;
+    border: 1px solid transparent;
+}
+
+.gender-icon--male {
+    color: #2563eb;
+    border-color: rgba(37, 99, 235, 0.28);
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.gender-icon--female {
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.28);
+    background: rgba(220, 38, 38, 0.08);
+}
+
 @keyframes rise-in {
     from { opacity: 0; transform: translateY(22px); }
     to { opacity: 1; transform: translateY(0); }

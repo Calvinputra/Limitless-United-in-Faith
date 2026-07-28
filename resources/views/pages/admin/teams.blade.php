@@ -143,6 +143,7 @@ class extends Component {
                 'nama' => $item->nama,
                 'gereja_lokal' => $item->gereja_lokal,
                 'gender' => $item->gender,
+                'umur' => $item->umur,
                 'team' => $item->team,
                 'team_label' => $item->teamLabel(),
             ]);
@@ -241,12 +242,13 @@ class extends Component {
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="table">
+                <table class="table table-sm">
                     <thead>
                         <tr>
                             <th>Nama</th>
                             <th class="hidden sm:table-cell">Gereja</th>
-                            <th class="hidden md:table-cell">Gender</th>
+                            <th>Gender</th>
+                            <th>Umur</th>
                             <th>Tim</th>
                         </tr>
                     </thead>
@@ -255,7 +257,10 @@ class extends Component {
                             <tr wire:key="member-{{ $row['id'] }}">
                                 <td class="font-medium">{{ $row['nama'] }}</td>
                                 <td class="hidden sm:table-cell">{{ $row['gereja_lokal'] }}</td>
-                                <td class="hidden md:table-cell">{{ $row['gender'] }}</td>
+                                <td>
+                                    <x-gender-icon :gender="$row['gender']" />
+                                </td>
+                                <td class="tabular-nums">{{ $row['umur'] }}</td>
                                 <td class="min-w-44">
                                     <select
                                         class="select select-bordered select-sm w-full max-w-xs"
@@ -295,9 +300,9 @@ class extends Component {
                             <li class="flex items-center justify-between gap-2 rounded-lg bg-base-200 px-3 py-2">
                                 <div>
                                     <p class="font-medium leading-tight">{{ $member->nama }}</p>
-                                    <p class="text-xs opacity-60">{{ $member->gereja_lokal }}</p>
+                                    <p class="text-xs opacity-60">{{ $member->gereja_lokal }} · {{ $member->umur }} th</p>
                                 </div>
-                                <span class="badge badge-ghost badge-sm">{{ $member->gender }}</span>
+                                <x-gender-icon :gender="$member->gender" size="sm" />
                             </li>
                         @endforeach
                     </ul>
