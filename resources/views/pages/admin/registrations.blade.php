@@ -248,41 +248,40 @@ class extends Component {
         </x-slot:actions>
     </x-header>
 
-    <div class="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div class="rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Total</p>
-            <p class="mt-1 text-3xl font-bold tabular-nums">{{ $stats['total'] }}</p>
-            <p class="mt-1 text-xs text-base-content/60">pendaftar</p>
+    <div class="mb-3 grid grid-cols-2 gap-2 lg:grid-cols-[auto_auto_1fr] lg:items-stretch">
+        <div class="rounded-xl border border-base-300 bg-base-100 px-3 py-2.5 shadow-sm">
+            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/45">Total</p>
+            <p class="text-2xl font-bold leading-none tabular-nums">{{ $stats['total'] }}</p>
         </div>
 
-        <div class="rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Gender</p>
-            <div class="mt-2 flex items-center gap-4">
-                <div class="flex items-center gap-2">
+        <div class="rounded-xl border border-base-300 bg-base-100 px-3 py-2.5 shadow-sm">
+            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/45">Gender</p>
+            <div class="mt-1 flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5">
                     <x-gender-icon gender="Laki-laki" size="sm" />
-                    <span class="text-xl font-bold tabular-nums text-blue-600">{{ $stats['male'] }}</span>
-                </div>
-                <div class="flex items-center gap-2">
+                    <strong class="tabular-nums text-blue-600">{{ $stats['male'] }}</strong>
+                </span>
+                <span class="inline-flex items-center gap-1.5">
                     <x-gender-icon gender="Perempuan" size="sm" />
-                    <span class="text-xl font-bold tabular-nums text-red-600">{{ $stats['female'] }}</span>
-                </div>
+                    <strong class="tabular-nums text-red-600">{{ $stats['female'] }}</strong>
+                </span>
             </div>
         </div>
 
-        <div class="col-span-2 rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Gereja lokal</p>
+        <div class="col-span-2 rounded-xl border border-base-300 bg-base-100 px-3 py-2.5 shadow-sm lg:col-span-1">
+            <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/45">Gereja lokal</p>
             @if ($stats['churches']->isEmpty())
-                <p class="mt-2 text-sm text-base-content/50">Belum ada data.</p>
+                <p class="mt-1 text-xs text-base-content/50">Belum ada data.</p>
             @else
-                <div class="mt-2 flex flex-wrap gap-2">
+                <div class="mt-1.5 flex flex-wrap gap-1.5">
                     @foreach ($stats['churches'] as $church)
                         <button
                             type="button"
-                            class="inline-flex items-center gap-2 rounded-xl border border-base-300 bg-base-200/70 px-3 py-1.5 text-sm transition hover:border-primary/40 hover:bg-primary/5 {{ $filterGereja === $church['name'] ? 'border-primary/50 bg-primary/10' : '' }}"
+                            class="inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs transition {{ $filterGereja === $church['name'] ? 'border-primary/50 bg-primary/10 font-semibold' : 'border-base-300 bg-base-200/60 hover:border-primary/30' }}"
                             wire:click="$set('filterGereja', '{{ $filterGereja === $church['name'] ? '' : $church['name'] }}')"
                         >
-                            <span class="font-medium">{{ $church['label'] }}</span>
-                            <span class="rounded-lg bg-base-100 px-1.5 py-0.5 text-xs font-bold tabular-nums">{{ $church['count'] }}</span>
+                            <span>{{ $church['label'] }}</span>
+                            <span class="rounded bg-base-100 px-1 font-bold tabular-nums">{{ $church['count'] }}</span>
                         </button>
                     @endforeach
                 </div>
@@ -290,41 +289,44 @@ class extends Component {
         </div>
     </div>
 
-    <x-card shadow class="mb-4">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <x-select
-                label="Filter gereja"
-                wire:model.live="filterGereja"
-                :options="$gerejaOptions"
-                placeholder="Semua gereja"
-            />
-            <x-select
-                label="Filter gender"
-                wire:model.live="filterGender"
-                :options="$genderOptions"
-                placeholder="Semua gender"
-            />
-            <x-select
-                label="Filter tim"
-                wire:model.live="filterTeam"
-                :options="$teamFilterOptions"
-                placeholder="Semua tim"
-            />
-            <x-select
-                label="Sort by"
-                wire:model.live="sortBy"
-                :options="$sortOptions"
-            />
-            <div class="flex items-end">
-                <x-button
-                    label="Reset"
-                    class="btn-ghost w-full"
-                    icon="o-arrow-path"
-                    wire:click="resetFilters"
-                />
+    <div class="mb-3 rounded-xl border border-base-300 bg-base-100 p-2.5 shadow-sm">
+        <div class="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <div class="grid flex-1 grid-cols-2 gap-2 md:grid-cols-4">
+                <select class="select select-bordered select-sm w-full" wire:model.live="filterGereja">
+                    @foreach ($gerejaOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
+
+                <select class="select select-bordered select-sm w-full" wire:model.live="filterGender">
+                    @foreach ($genderOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
+
+                <select class="select select-bordered select-sm w-full" wire:model.live="filterTeam">
+                    @foreach ($teamFilterOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
+
+                <select class="select select-bordered select-sm w-full" wire:model.live="sortBy">
+                    @foreach ($sortOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
             </div>
+
+            <button
+                type="button"
+                class="btn btn-ghost btn-sm shrink-0"
+                wire:click="resetFilters"
+            >
+                <x-icon name="o-arrow-path" class="h-4 w-4" />
+                Reset
+            </button>
         </div>
-    </x-card>
+    </div>
 
     <x-card shadow>
         @if ($rows->isEmpty())
@@ -332,7 +334,7 @@ class extends Component {
                 Belum ada pendaftar{{ ($search || $filterGereja || $filterGender || $filterTeam) ? ' untuk filter ini' : '' }}.
             </div>
         @else
-            <div class="mb-3 text-sm text-base-content/60">
+            <div class="mb-2 text-xs text-base-content/60">
                 Menampilkan <strong class="text-base-content">{{ $rows->count() }}</strong> pendaftar
             </div>
             <div class="overflow-x-auto">
