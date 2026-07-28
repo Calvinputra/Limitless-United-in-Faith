@@ -1,0 +1,324 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../resources/views/**/*.blade.php';
+@source '../../app/Livewire/**/*.php';
+@source '../../app/View/Components/**/*.php';
+
+@theme {
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+}
+
+/** daisyUI */
+@plugin "daisyui" {
+    themes: light --default;
+}
+
+@plugin "daisyui/theme" {
+    name: "light";
+    default: true;
+    --color-primary: #0f766e;
+    --color-primary-content: #f4fbfa;
+    --color-secondary: #1e3a5f;
+    --color-secondary-content: #f5f8fc;
+    --color-accent: #c4a35a;
+    --color-accent-content: #1a1408;
+    --color-neutral: #243044;
+    --color-neutral-content: #f4f6f8;
+    --color-base-100: #ffffff;
+    --color-base-200: #eef3f2;
+    --color-base-300: #d7e2df;
+    --color-base-content: #1a2433;
+    --color-info: #3b82a8;
+    --color-success: #2f7d62;
+    --color-warning: #b9892d;
+    --color-error: #b54a3f;
+}
+
+/* maryUI */
+@source "../../vendor/robsontenorio/mary/src/View/Components/**/*.php";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.mary-table-pagination span[aria-current="page"] > span {
+    @apply bg-primary text-base-100
+}
+
+.mary-table-pagination button {
+    @apply cursor-pointer
+}
+
+:root {
+    --canvas: #e6eef3;
+    --ink: #1a2433;
+    --ink-soft: #4a5a6d;
+    --mist: #f7fafb;
+    --teal: #0f766e;
+    --teal-deep: #0b5a54;
+    --gold-soft: #c4a35a;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.font-display {
+    font-family: var(--font-display);
+}
+
+/* Hero motion */
+.hero-kenburns {
+    animation: kenburns 22s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.hero-float {
+    animation: float-y 6s ease-in-out infinite;
+}
+
+.hero-shimmer {
+    background: linear-gradient(
+        110deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.14) 45%,
+        transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 7s linear infinite;
+}
+
+/* Scroll reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.35s; }
+
+/* Soft ambient orbs */
+.orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(48px);
+    pointer-events: none;
+    opacity: 0.45;
+    animation: orb-pulse 8s ease-in-out infinite;
+}
+
+.wave-divider {
+    display: block;
+    width: 100%;
+    height: 56px;
+    color: #f7fafb;
+}
+
+.music-fab {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border-radius: 9999px;
+    border: 1px solid rgba(15, 118, 110, 0.22);
+    background: rgba(247, 250, 251, 0.92);
+    color: #0b5a54;
+    box-shadow: 0 10px 30px rgba(26, 36, 51, 0.12);
+    backdrop-filter: blur(10px);
+    transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.music-fab:hover {
+    transform: translateY(-2px);
+    background: #ffffff;
+}
+
+.music-fab:focus-visible {
+    outline: 2px solid #0f766e;
+    outline-offset: 3px;
+}
+
+.yt-bgm-wrap {
+    position: fixed;
+    left: -1000px;
+    top: 0;
+    width: 320px;
+    height: 180px;
+    overflow: hidden;
+    opacity: 0.01;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.music-eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+}
+
+.music-eq span {
+    width: 3px;
+    border-radius: 99px;
+    background: #0f766e;
+    animation: eq-bounce 0.9s ease-in-out infinite;
+}
+
+.music-eq span:nth-child(1) { height: 6px; animation-delay: 0s; }
+.music-eq span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+.music-eq span:nth-child(3) { height: 8px; animation-delay: 0.3s; }
+
+.music-eq.is-paused span {
+    animation: none;
+    height: 4px;
+}
+
+.form-glow {
+    background:
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(196, 163, 90, 0.12), transparent 35%),
+        #f7fafb;
+}
+
+.limitless-form form {
+    gap: 0.7rem !important;
+}
+
+.limitless-form .fieldset {
+    gap: 0.2rem !important;
+    padding-block: 0 !important;
+    margin: 0 !important;
+}
+
+.limitless-form .fieldset-legend {
+    margin-bottom: 0.15rem !important;
+    margin-top: 0 !important;
+    padding-block: 0.05rem !important;
+    padding-inline: 0 !important;
+    font-size: 0.875rem;
+    line-height: 1.25;
+}
+
+.limitless-form .input,
+.limitless-form .select,
+.limitless-form .file-input {
+    min-height: 2.65rem;
+    height: 2.65rem;
+}
+
+.limitless-form .fieldset-label {
+    margin-top: 0.2rem;
+    font-size: 0.75rem;
+    line-height: 1.25;
+}
+
+.gender-pick {
+    display: inline-flex;
+    width: 3.1rem;
+    height: 3.1rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.9rem;
+    border: 1.5px solid transparent;
+    background: #fff;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.gender-pick--male {
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.28);
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.gender-pick--female {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.28);
+    background: rgba(239, 68, 68, 0.06);
+}
+
+.gender-pick:hover {
+    transform: translateY(-1px);
+}
+
+.gender-pick--male:hover,
+.gender-pick--male.is-active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.14);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.gender-pick--female:hover,
+.gender-pick--female.is-active {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.14);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+}
+
+.gender-pick.is-active {
+    transform: translateY(-1px);
+}
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kenburns {
+    from { transform: scale(1.05) translate3d(0, 0, 0); }
+    to { transform: scale(1.16) translate3d(-2%, -1%, 0); }
+}
+
+@keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes orb-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.35; }
+    50% { transform: scale(1.15); opacity: 0.55; }
+}
+
+@keyframes eq-bounce {
+    0%, 100% { transform: scaleY(0.45); }
+    50% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-kenburns,
+    .hero-float,
+    .hero-shimmer,
+    .orb,
+    .music-eq span,
+    .reveal {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1;
+        transform: none;
+    }
+}
