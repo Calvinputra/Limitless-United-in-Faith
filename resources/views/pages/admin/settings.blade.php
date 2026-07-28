@@ -26,6 +26,10 @@ class extends Component {
     /** @var list<array{key: string, value: string}> */
     public array $items = [];
 
+    public bool $openPayment = false;
+
+    public bool $openGereja = false;
+
     public function mount(): void
     {
         if (! Auth::check()) {
@@ -43,9 +47,20 @@ class extends Component {
         $this->items = GerejaOptionService::all();
     }
 
+    public function togglePayment(): void
+    {
+        $this->openPayment = ! $this->openPayment;
+    }
+
+    public function toggleGereja(): void
+    {
+        $this->openGereja = ! $this->openGereja;
+    }
+
     public function addItem(): void
     {
         $this->items[] = ['key' => '', 'value' => ''];
+        $this->openGereja = true;
     }
 
     public function removeItem(int $index): void
@@ -76,6 +91,7 @@ class extends Component {
         Setting::setValue('transfer_amount', (string) $validated['transfer_amount']);
 
         $this->bank_account = Setting::getValue('bank_account', $this->bank_account) ?? $this->bank_account;
+        $this->openPayment = false;
         $this->success('Pembayaran disimpan.', position: 'toast-bottom');
     }
 
@@ -98,6 +114,7 @@ class extends Component {
         }
 
         $this->items = GerejaOptionService::all();
+        $this->openGereja = false;
         $this->success('Gereja lokal disimpan.', position: 'toast-bottom');
     }
 
@@ -105,6 +122,8 @@ class extends Component {
     {
         return [
             'amountLabel' => 'Rp '.number_format($this->transfer_amount, 0, ',', '.'),
+            'gerejaCount' => count($this->items),
+            'gerejaPreview' => collect($this->items)->pluck('value')->filter()->take(3)->implode(', '),
         ];
     }
 }; ?>
@@ -112,84 +131,130 @@ class extends Component {
 <div>
     <x-header title="Setting" subtitle="Pembayaran & gereja lokal." separator progress-indicator />
 
-    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
+    <div class="mx-auto max-w-3xl space-y-2.5">
         {{-- PEMBAYARAN --}}
-        <x-card title="Pembayaran" class="!p-4" shadow>
-            <div class="mb-3 rounded-lg border border-teal-800/15 bg-teal-50/70 px-3 py-2 text-sm">
-                <div class="flex items-center justify-between gap-2">
-                    <span class="text-[0.65rem] font-semibold uppercase tracking-wider text-teal-800/70">Transfer ke</span>
-                    <strong class="text-teal-900">{{ $amountLabel }}</strong>
-                </div>
-                <p class="mt-1 text-[#1a2433]">
-                    <strong>{{ $bank_name }}</strong> · {{ $bank_account }} · {{ $bank_holder }}
-                </p>
-            </div>
-
-            <x-form wire:submit="savePayment" class="!gap-2">
-                <div class="grid grid-cols-2 gap-2">
-                    <x-input label="Bank" wire:model="bank_name" placeholder="BCA" required />
-                    <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
-                </div>
-                <x-input label="Atas nama" wire:model="bank_holder" placeholder="Vera Lisiani Bong" required />
-                <x-input
-                    label="Nominal (Rp)"
-                    type="number"
-                    wire:model.live="transfer_amount"
-                    min="1000"
-                    step="1000"
-                    required
+        <div class="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+            <button
+                type="button"
+                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-base-200/50"
+                wire:click="togglePayment"
+                :aria-expanded="{{ $openPayment ? 'true' : 'false' }}"
+            >
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-800">
+                    <x-icon name="o-banknotes" class="h-4 w-4" />
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-semibold text-base-content">Pembayaran</span>
+                    <span class="block truncate text-xs text-base-content/55">
+                        {{ $bank_name }} · {{ $bank_account }} · {{ $bank_holder }} · {{ $amountLabel }}
+                    </span>
+                </span>
+                <x-icon
+                    name="{{ $openPayment ? 'o-chevron-up' : 'o-chevron-down' }}"
+                    class="h-4 w-4 shrink-0 text-base-content/40"
                 />
-                <x-button label="Simpan pembayaran" type="submit" class="btn-primary btn-sm w-full" icon="o-check" spinner="savePayment" />
-            </x-form>
-        </x-card>
+            </button>
+
+            @if ($openPayment)
+                <div class="border-t border-base-300 px-4 py-3">
+                    <x-form wire:submit="savePayment" class="!gap-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <x-input label="Bank" wire:model="bank_name" placeholder="BCA" required />
+                            <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
+                        </div>
+                        <x-input label="Atas nama" wire:model="bank_holder" placeholder="Vera Lisiani Bong" required />
+                        <x-input
+                            label="Nominal (Rp)"
+                            type="number"
+                            wire:model.live="transfer_amount"
+                            min="1000"
+                            step="1000"
+                            required
+                        />
+                        <div class="flex gap-2 pt-1">
+                            <x-button label="Simpan" type="submit" class="btn-primary btn-sm" icon="o-check" spinner="savePayment" />
+                            <x-button label="Tutup" type="button" class="btn-ghost btn-sm" wire:click="$set('openPayment', false)" />
+                        </div>
+                    </x-form>
+                </div>
+            @endif
+        </div>
 
         {{-- GEREJA --}}
-        <x-card title="Gereja lokal" subtitle="Key disimpan · Value ditampilkan" class="!p-4" shadow>
-            <div class="mb-1.5 flex items-center gap-2 px-0.5 text-[0.7rem] font-medium text-base-content/50">
-                <span class="min-w-0 flex-1">Key</span>
-                <span class="min-w-0 flex-[1.2]">Value</span>
-                <span class="w-8 shrink-0"></span>
-            </div>
+        <div class="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+            <button
+                type="button"
+                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-base-200/50"
+                wire:click="toggleGereja"
+            >
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                    <x-icon name="o-building-library" class="h-4 w-4" />
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-semibold text-base-content">Gereja lokal</span>
+                    <span class="block truncate text-xs text-base-content/55">
+                        {{ $gerejaCount }} opsi
+                        @if ($gerejaPreview)
+                            · {{ $gerejaPreview }}{{ $gerejaCount > 3 ? '…' : '' }}
+                        @endif
+                    </span>
+                </span>
+                <x-icon
+                    name="{{ $openGereja ? 'o-chevron-up' : 'o-chevron-down' }}"
+                    class="h-4 w-4 shrink-0 text-base-content/40"
+                />
+            </button>
 
-            <div class="space-y-1.5">
-                @foreach ($items as $index => $item)
-                    <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-2">
-                        <input
-                            type="text"
-                            class="input input-bordered input-sm min-w-0 flex-1"
-                            placeholder="key"
-                            wire:model="items.{{ $index }}.key"
-                        >
-                        <input
-                            type="text"
-                            class="input input-bordered input-sm min-w-0 flex-[1.2]"
-                            placeholder="value"
-                            wire:model="items.{{ $index }}.value"
-                            required
-                        >
-                        <button
-                            type="button"
-                            class="btn btn-ghost btn-xs h-8 w-8 shrink-0 p-0 text-error"
-                            wire:click="removeItem({{ $index }})"
-                            title="Hapus"
-                        >
-                            <x-icon name="o-trash" class="h-4 w-4" />
-                        </button>
+            @if ($openGereja)
+                <div class="border-t border-base-300 px-4 py-3">
+                    <div class="mb-1.5 flex items-center gap-2 text-[0.7rem] font-medium text-base-content/50">
+                        <span class="min-w-0 flex-1">Key</span>
+                        <span class="min-w-0 flex-[1.2]">Value</span>
+                        <span class="w-8 shrink-0"></span>
                     </div>
-                @endforeach
-            </div>
 
-            @error('items')
-                <p class="mt-2 text-sm text-error">{{ $message }}</p>
-            @enderror
-            @error('items.*.value')
-                <p class="mt-2 text-sm text-error">{{ $message }}</p>
-            @enderror
+                    <div class="space-y-1.5">
+                        @foreach ($items as $index => $item)
+                            <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    class="input input-bordered input-sm min-w-0 flex-1 !w-auto"
+                                    placeholder="key"
+                                    wire:model="items.{{ $index }}.key"
+                                >
+                                <input
+                                    type="text"
+                                    class="input input-bordered input-sm min-w-0 flex-[1.2] !w-auto"
+                                    placeholder="value"
+                                    wire:model="items.{{ $index }}.value"
+                                    required
+                                >
+                                <button
+                                    type="button"
+                                    class="btn btn-ghost btn-xs h-8 w-8 shrink-0 p-0 text-error"
+                                    wire:click="removeItem({{ $index }})"
+                                    title="Hapus"
+                                >
+                                    <x-icon name="o-trash" class="h-4 w-4" />
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
 
-            <div class="mt-3 flex flex-wrap gap-2">
-                <x-button label="Tambah" icon="o-plus" class="btn-ghost btn-sm" wire:click="addItem" />
-                <x-button label="Simpan gereja" icon="o-check" class="btn-primary btn-sm" wire:click="saveGereja" spinner="saveGereja" />
-            </div>
-        </x-card>
+                    @error('items')
+                        <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                    @enderror
+                    @error('items.*.value')
+                        <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                    @enderror
+
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <x-button label="Tambah" icon="o-plus" class="btn-ghost btn-sm" wire:click="addItem" />
+                        <x-button label="Simpan" icon="o-check" class="btn-primary btn-sm" wire:click="saveGereja" spinner="saveGereja" />
+                        <x-button label="Tutup" class="btn-ghost btn-sm" wire:click="$set('openGereja', false)" />
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
