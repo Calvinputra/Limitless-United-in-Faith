@@ -23,7 +23,7 @@ class extends Component {
 
     public int $transfer_amount = 150000;
 
-    /** @var list<array{key: string, value: string}> */
+    /** @var list<string> */
     public array $items = [];
 
     public bool $openPayment = false;
@@ -59,7 +59,7 @@ class extends Component {
 
     public function addItem(): void
     {
-        $this->items[] = ['key' => '', 'value' => ''];
+        $this->items[] = '';
         $this->openGereja = true;
     }
 
@@ -99,10 +99,9 @@ class extends Component {
     {
         $this->validate([
             'items' => 'required|array|min:1',
-            'items.*.key' => 'nullable|string|max:80',
-            'items.*.value' => 'required|string|max:120',
+            'items.*' => 'required|string|max:120',
         ], [
-            'items.*.value.required' => 'Value gereja wajib diisi.',
+            'items.*.required' => 'Nama gereja wajib diisi.',
         ]);
 
         try {
@@ -120,10 +119,12 @@ class extends Component {
 
     public function with(): array
     {
+        $names = collect($this->items)->map(fn ($item) => trim((string) $item))->filter();
+
         return [
             'amountLabel' => 'Rp '.number_format($this->transfer_amount, 0, ',', '.'),
-            'gerejaCount' => count($this->items),
-            'gerejaPreview' => collect($this->items)->pluck('value')->filter()->take(3)->implode(', '),
+            'gerejaCount' => $names->count(),
+            'gerejaPreview' => $names->take(3)->implode(', '),
         ];
     }
 }; ?>
@@ -131,16 +132,15 @@ class extends Component {
 <div>
     <x-header title="Setting" subtitle="Pembayaran & gereja lokal." separator progress-indicator />
 
-    <div class="mx-auto max-w-3xl space-y-2.5">
+    <div class="mx-auto max-w-3xl space-y-3">
         {{-- PEMBAYARAN --}}
-        <div class="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+        <div class="overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm">
             <button
                 type="button"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-base-200/50"
+                class="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-base-200/50"
                 wire:click="togglePayment"
-                :aria-expanded="{{ $openPayment ? 'true' : 'false' }}"
             >
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-800">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
                     <x-icon name="o-banknotes" class="h-4 w-4" />
                 </span>
                 <span class="min-w-0 flex-1">
@@ -156,9 +156,9 @@ class extends Component {
             </button>
 
             @if ($openPayment)
-                <div class="border-t border-base-300 px-4 py-3">
-                    <x-form wire:submit="savePayment" class="!gap-2">
-                        <div class="grid grid-cols-2 gap-2">
+                <div class="border-t border-base-300 px-4 py-4">
+                    <x-form wire:submit="savePayment" class="!gap-3">
+                        <div class="grid grid-cols-2 gap-3">
                             <x-input label="Bank" wire:model="bank_name" placeholder="BCA" required />
                             <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
                         </div>
@@ -181,13 +181,13 @@ class extends Component {
         </div>
 
         {{-- GEREJA --}}
-        <div class="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+        <div class="overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm">
             <button
                 type="button"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-base-200/50"
+                class="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-base-200/50"
                 wire:click="toggleGereja"
             >
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
                     <x-icon name="o-building-library" class="h-4 w-4" />
                 </span>
                 <span class="min-w-0 flex-1">
@@ -206,32 +206,20 @@ class extends Component {
             </button>
 
             @if ($openGereja)
-                <div class="border-t border-base-300 px-4 py-3">
-                    <div class="mb-1.5 flex items-center gap-2 text-[0.7rem] font-medium text-base-content/50">
-                        <span class="min-w-0 flex-1">Key</span>
-                        <span class="min-w-0 flex-[1.2]">Value</span>
-                        <span class="w-8 shrink-0"></span>
-                    </div>
-
-                    <div class="space-y-1.5">
+                <div class="border-t border-base-300 px-4 py-4">
+                    <div class="space-y-2.5">
                         @foreach ($items as $index => $item)
-                            <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-2">
+                            <div wire:key="gereja-item-{{ $index }}" class="flex items-center gap-2.5">
                                 <input
                                     type="text"
-                                    class="input input-bordered input-sm min-w-0 flex-1 !w-auto"
-                                    placeholder="key"
-                                    wire:model="items.{{ $index }}.key"
-                                >
-                                <input
-                                    type="text"
-                                    class="input input-bordered input-sm min-w-0 flex-[1.2] !w-auto"
-                                    placeholder="value"
-                                    wire:model="items.{{ $index }}.value"
+                                    class="input input-bordered input-sm min-h-10 min-w-0 flex-1"
+                                    placeholder="Nama gereja"
+                                    wire:model="items.{{ $index }}"
                                     required
                                 >
                                 <button
                                     type="button"
-                                    class="btn btn-ghost btn-xs h-8 w-8 shrink-0 p-0 text-error"
+                                    class="btn btn-ghost btn-sm h-10 w-10 shrink-0 p-0 text-error"
                                     wire:click="removeItem({{ $index }})"
                                     title="Hapus"
                                 >
@@ -244,11 +232,11 @@ class extends Component {
                     @error('items')
                         <p class="mt-2 text-sm text-error">{{ $message }}</p>
                     @enderror
-                    @error('items.*.value')
+                    @error('items.*')
                         <p class="mt-2 text-sm text-error">{{ $message }}</p>
                     @enderror
 
-                    <div class="mt-3 flex flex-wrap gap-2">
+                    <div class="mt-4 flex flex-wrap gap-2">
                         <x-button label="Tambah" icon="o-plus" class="btn-ghost btn-sm" wire:click="addItem" />
                         <x-button label="Simpan" icon="o-check" class="btn-primary btn-sm" wire:click="saveGereja" spinner="saveGereja" />
                         <x-button label="Tutup" class="btn-ghost btn-sm" wire:click="$set('openGereja', false)" />

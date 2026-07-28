@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Setting;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class GerejaOptionService
@@ -11,21 +10,21 @@ class GerejaOptionService
     public const SETTING_KEY = 'gereja_options';
 
     /**
-     * @return list<array{key: string, value: string}>
+     * @return list<string>
      */
     public static function defaults(): array
     {
         return [
-            ['key' => 'Central Park', 'value' => 'Central Park'],
-            ['key' => 'Puri', 'value' => 'Puri'],
-            ['key' => 'Gancit', 'value' => 'Gancit'],
-            ['key' => 'Kelapa Gading', 'value' => 'Kelapa Gading'],
-            ['key' => 'Pluit', 'value' => 'Pluit'],
+            'Central Park',
+            'Puri',
+            'Gancit',
+            'Kelapa Gading',
+            'Pluit',
         ];
     }
 
     /**
-     * @return list<array{key: string, value: string}>
+     * @return list<string>
      */
     public static function all(): array
     {
@@ -44,22 +43,23 @@ class GerejaOptionService
         $items = [];
 
         foreach ($decoded as $row) {
-            if (! is_array($row)) {
+            if (is_string($row)) {
+                $name = trim($row);
+            } elseif (is_array($row)) {
+                // Backward compatible with old key/value format
+                $name = trim((string) ($row['value'] ?? $row['key'] ?? ''));
+            } else {
                 continue;
             }
 
-            $key = trim((string) ($row['key'] ?? ''));
-            $value = trim((string) ($row['value'] ?? ''));
-
-            if ($key === '' || $value === '') {
+            if ($name === '') {
                 continue;
             }
 
-            $items[] = [
-                'key' => $key,
-                'value' => $value,
-            ];
+            $items[] = $name;
         }
+
+        $items = array_values(array_unique($items));
 
         return $items !== [] ? $items : self::defaults();
     }
@@ -70,9 +70,9 @@ class GerejaOptionService
     public static function selectOptions(): array
     {
         return array_map(
-            fn (array $item) => [
-                'id' => $item['key'],
-                'name' => $item['value'],
+            fn (string $name) => [
+                'id' => $name,
+                'name' => $name,
             ],
             self::all(),
         );
@@ -83,7 +83,7 @@ class GerejaOptionService
      */
     public static function keys(): array
     {
-        return array_map(fn (array $item) => $item['key'], self::all());
+        return self::all();
     }
 
     public static function label(?string $key): string
@@ -92,54 +92,38 @@ class GerejaOptionService
             return '—';
         }
 
-        foreach (self::all() as $item) {
-            if ($item['key'] === $key) {
-                return $item['value'];
-            }
-        }
-
         return $key;
     }
 
     /**
-     * @param  list<array{key?: string, value?: string}>  $items
+     * @param  list<string|array{key?: string, value?: string}>  $items
      */
     public static function save(array $items): void
     {
         $normalized = [];
         $seen = [];
 
-        foreach ($items as $index => $item) {
-            $key = trim((string) ($item['key'] ?? ''));
-            $value = trim((string) ($item['value'] ?? ''));
+        foreach ($items as $item) {
+            if (is_array($item)) {
+                $name = trim((string) ($item['value'] ?? $item['key'] ?? $item['name'] ?? ''));
+            } else {
+                $name = trim((string) $item);
+            }
 
-            if ($key === '' && $value === '') {
+            if ($name === '') {
                 continue;
             }
 
-            if ($key === '') {
-                $key = Str::slug($value) ?: 'gereja-'.($index + 1);
-            }
-
-            if ($value === '') {
-                throw ValidationException::withMessages([
-                    'items' => 'Value gereja tidak boleh kosong.',
-                ]);
-            }
-
-            $lookup = Str::lower($key);
+            $lookup = mb_strtolower($name);
 
             if (isset($seen[$lookup])) {
                 throw ValidationException::withMessages([
-                    'items' => "Key \"{$key}\" duplikat. Gunakan key unik.",
+                    'items' => "Gereja \"{$name}\" duplikat.",
                 ]);
             }
 
             $seen[$lookup] = true;
-            $normalized[] = [
-                'key' => $key,
-                'value' => $value,
-            ];
+            $normalized[] = $name;
         }
 
         if ($normalized === []) {
