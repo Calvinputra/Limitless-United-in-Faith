@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\FellowRegistration;
+use App\Services\GerejaOptionService;
 use App\Services\TeamAssignmentService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -142,6 +143,7 @@ class extends Component {
                 'id' => $item->id,
                 'nama' => $item->nama,
                 'gereja_lokal' => $item->gereja_lokal,
+                'gereja_label' => GerejaOptionService::label($item->gereja_lokal),
                 'gender' => $item->gender,
                 'umur' => $item->umur,
                 'team' => $item->team,
@@ -256,7 +258,7 @@ class extends Component {
                         @foreach ($rows as $row)
                             <tr wire:key="member-{{ $row['id'] }}">
                                 <td class="font-medium">{{ $row['nama'] }}</td>
-                                <td class="hidden sm:table-cell">{{ $row['gereja_lokal'] }}</td>
+                                <td class="hidden sm:table-cell">{{ $row['gereja_label'] }}</td>
                                 <td>
                                     <x-gender-icon :gender="$row['gender']" />
                                 </td>
@@ -300,7 +302,7 @@ class extends Component {
                             <li class="flex items-center justify-between gap-2 rounded-lg bg-base-200 px-3 py-2">
                                 <div>
                                     <p class="font-medium leading-tight">{{ $member->nama }}</p>
-                                    <p class="text-xs opacity-60">{{ $member->gereja_lokal }} · {{ $member->umur }} th</p>
+                                    <p class="text-xs opacity-60">{{ \App\Services\GerejaOptionService::label($member->gereja_lokal) }} · {{ $member->umur }} th</p>
                                 </div>
                                 <x-gender-icon :gender="$member->gender" size="sm" />
                             </li>

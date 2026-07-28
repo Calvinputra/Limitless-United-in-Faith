@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use App\Models\FellowRegistration;
 use App\Models\Setting;
+use App\Services\GerejaOptionService;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -49,13 +51,9 @@ class LandingPage extends Component
      */
     public function gerejaOptions(): array
     {
-        return [
-            ['id' => 'Central Park', 'name' => 'Central Park'],
-            ['id' => 'Puri', 'name' => 'Puri'],
-            ['id' => 'Gancit', 'name' => 'Gancit'],
-            ['id' => 'Kelapa Gading', 'name' => 'Kelapa Gading'],
-            ['id' => 'Pluit', 'name' => 'Pluit'],
-        ];
+        GerejaOptionService::ensureSeeded();
+
+        return GerejaOptionService::selectOptions();
     }
 
     public function removeBuktiTf(): void
@@ -92,13 +90,14 @@ class LandingPage extends Component
             'gender' => 'required|in:Laki-laki,Perempuan',
             'umur' => 'required|integer|min:12|max:80',
             'whatsapp' => ['required', 'string', 'min:10', 'max:15', 'regex:/^[0-9]+$/'],
-            'gereja_lokal' => 'required|in:Central Park,Puri,Gancit,Kelapa Gading,Pluit',
+            'gereja_lokal' => ['required', 'string', Rule::in(GerejaOptionService::keys())],
             'bukti_tf' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:4096',
         ], [
             'bukti_tf.required' => 'Upload bukti transfer wajib diisi.',
             'whatsapp.regex' => 'Nomor telepon hanya boleh angka.',
             'whatsapp.min' => 'Nomor telepon minimal 10 digit.',
             'whatsapp.max' => 'Nomor telepon maksimal 15 digit.',
+            'gereja_lokal.in' => 'Pilih gereja lokal yang tersedia.',
         ]);
 
         if (! $this->bukti_tf instanceof TemporaryUploadedFile) {

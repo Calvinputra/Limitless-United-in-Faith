@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\FellowRegistration;
+use App\Services\GerejaOptionService;
 use App\Services\TeamAssignmentService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -156,6 +157,7 @@ class extends Component {
                     'whatsapp' => $item->whatsapp,
                     'whatsapp_link' => $this->whatsappLink($item->whatsapp),
                     'gereja_lokal' => $item->gereja_lokal,
+                    'gereja_label' => GerejaOptionService::label($item->gereja_lokal),
                     'team' => $item->team,
                     'team_label' => $item->teamLabel(),
                     'bukti_url' => $item->hasBuktiTf() ? route('admin.bukti-tf', $item) : null,
@@ -176,6 +178,7 @@ class extends Component {
             ->groupBy('gereja_lokal')
             ->map(fn (Collection $group, string $name) => [
                 'name' => $name,
+                'label' => GerejaOptionService::label($name),
                 'count' => $group->count(),
             ])
             ->sortByDesc('count')
@@ -191,14 +194,12 @@ class extends Component {
 
     public function with(TeamAssignmentService $teams): array
     {
-        $gerejaOptions = [
-            ['id' => '', 'name' => 'Semua gereja'],
-            ['id' => 'Central Park', 'name' => 'Central Park'],
-            ['id' => 'Puri', 'name' => 'Puri'],
-            ['id' => 'Gancit', 'name' => 'Gancit'],
-            ['id' => 'Kelapa Gading', 'name' => 'Kelapa Gading'],
-            ['id' => 'Pluit', 'name' => 'Pluit'],
-        ];
+        GerejaOptionService::ensureSeeded();
+
+        $gerejaOptions = array_merge(
+            [['id' => '', 'name' => 'Semua gereja']],
+            GerejaOptionService::selectOptions(),
+        );
 
         $genderOptions = [
             ['id' => '', 'name' => 'Semua gender'],
@@ -280,7 +281,7 @@ class extends Component {
                             class="inline-flex items-center gap-2 rounded-xl border border-base-300 bg-base-200/70 px-3 py-1.5 text-sm transition hover:border-primary/40 hover:bg-primary/5 {{ $filterGereja === $church['name'] ? 'border-primary/50 bg-primary/10' : '' }}"
                             wire:click="$set('filterGereja', '{{ $filterGereja === $church['name'] ? '' : $church['name'] }}')"
                         >
-                            <span class="font-medium">{{ $church['name'] }}</span>
+                            <span class="font-medium">{{ $church['label'] }}</span>
                             <span class="rounded-lg bg-base-100 px-1.5 py-0.5 text-xs font-bold tabular-nums">{{ $church['count'] }}</span>
                         </button>
                     @endforeach
@@ -371,7 +372,7 @@ class extends Component {
                                         {{ $row['whatsapp'] }}
                                     </a>
                                 </td>
-                                <td class="hidden sm:table-cell">{{ $row['gereja_lokal'] }}</td>
+                                <td class="hidden sm:table-cell">{{ $row['gereja_label'] }}</td>
                                 <td class="min-w-36">
                                     <select
                                         class="select select-bordered select-sm w-full max-w-[9rem]"

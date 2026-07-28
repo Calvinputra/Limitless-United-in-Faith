@@ -51,6 +51,7 @@
 
                 <x-menu-item title="Pendaftar" icon="o-clipboard-document-list" link="{{ route('admin.registrations') }}" />
                 <x-menu-item title="Manajemen Tim" icon="o-user-group" link="{{ route('admin.teams') }}" />
+                <x-menu-item title="Gereja Lokal" icon="o-building-library" link="{{ route('admin.gereja') }}" />
                 <x-menu-item title="Landing page" icon="o-globe-alt" link="{{ route('landing') }}" />
             </x-menu>
         </x-slot:sidebar>
