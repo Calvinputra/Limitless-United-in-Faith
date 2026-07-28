@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BuktiTfController;
 use App\Livewire\LandingPage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,8 @@ Route::post('/logout', function () {
 Route::middleware('auth')->group(function () {
     Route::livewire('/admin', 'pages::admin.registrations')->name('admin.registrations');
     Route::livewire('/admin/tim', 'pages::admin.teams')->name('admin.teams');
+    Route::get('/admin/bukti-tf/{registration}', [BuktiTfController::class, 'show'])
+        ->name('admin.bukti-tf');
 });
 
 Route::redirect('/login', '/admin/login');

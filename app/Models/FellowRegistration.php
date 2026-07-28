@@ -33,7 +33,14 @@ class FellowRegistration extends Model
 
     public function buktiTfUrl(): string
     {
-        return Storage::disk('public')->url($this->bukti_tf_path);
+        return route('admin.bukti-tf', $this);
+    }
+
+    public function hasBuktiTf(): bool
+    {
+        return is_string($this->bukti_tf_path)
+            && $this->bukti_tf_path !== ''
+            && Storage::disk('public')->exists($this->bukti_tf_path);
     }
 
     public function teamLabel(): string

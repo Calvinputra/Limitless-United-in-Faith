@@ -30,6 +30,8 @@ class extends Component {
 
     public string $previewName = '';
 
+    public bool $previewIsPdf = false;
+
     public function mount(): void
     {
         if (! Auth::check()) {
@@ -68,20 +70,22 @@ class extends Component {
     {
         $registration = FellowRegistration::query()->findOrFail($id);
 
-        if (! $registration->bukti_tf_path || ! Storage::disk('public')->exists($registration->bukti_tf_path)) {
-            $this->error('Bukti transfer tidak ditemukan.', position: 'toast-bottom');
+        if (! $registration->hasBuktiTf()) {
+            $this->error('Bukti transfer tidak ditemukan di server.', position: 'toast-bottom');
 
             return;
         }
 
-        $this->previewUrl = Storage::disk('public')->url($registration->bukti_tf_path);
+        $this->previewUrl = route('admin.bukti-tf', $registration);
         $this->previewName = $registration->nama;
+        $this->previewIsPdf = str($registration->bukti_tf_path)->lower()->endsWith('.pdf');
     }
 
     public function closePreview(): void
     {
         $this->previewUrl = null;
         $this->previewName = '';
+        $this->previewIsPdf = false;
     }
 
     public function deleteRegistration(int $id): void
@@ -154,7 +158,8 @@ class extends Component {
                     'gereja_lokal' => $item->gereja_lokal,
                     'team' => $item->team,
                     'team_label' => $item->teamLabel(),
-                    'bukti_url' => $item->bukti_tf_path ? Storage::disk('public')->url($item->bukti_tf_path) : null,
+                    'bukti_url' => $item->hasBuktiTf() ? route('admin.bukti-tf', $item) : null,
+                    'bukti_is_pdf' => str($item->bukti_tf_path ?? '')->lower()->endsWith('.pdf'),
                     'created_at' => $item->created_at?->format('d M Y H:i'),
                 ];
             });
@@ -421,7 +426,7 @@ class extends Component {
             <div class="modal-box max-w-3xl">
                 <h3 class="font-bold text-lg">Bukti TF — {{ $previewName }}</h3>
                 <div class="mt-4">
-                    @if (str($previewUrl)->contains(['.pdf']))
+                    @if ($previewIsPdf)
                         <iframe src="{{ $previewUrl }}" class="h-[70vh] w-full rounded-lg border"></iframe>
                     @else
                         <img src="{{ $previewUrl }}" alt="Bukti transfer" class="max-h-[70vh] w-full rounded-lg object-contain bg-base-200">
