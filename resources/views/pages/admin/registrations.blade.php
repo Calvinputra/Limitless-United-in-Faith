@@ -248,17 +248,17 @@ class extends Component {
         </x-slot:actions>
     </x-header>
 
-    <div class="space-y-4">
+    <div class="space-y-5">
         {{-- Stats: satu baris compact --}}
-        <div class="flex flex-wrap gap-3">
-            <div class="min-w-[7.5rem] rounded-2xl border border-base-300 bg-base-100 px-4 py-3.5 shadow-sm">
+        <div class="flex flex-wrap gap-4">
+            <div class="min-w-[7.5rem] rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
                 <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-base-content/45">Total</p>
-                <p class="mt-1.5 text-2xl font-bold leading-none tabular-nums">{{ $stats['total'] }}</p>
+                <p class="mt-2 text-2xl font-bold leading-none tabular-nums">{{ $stats['total'] }}</p>
             </div>
 
-            <div class="rounded-2xl border border-base-300 bg-base-100 px-4 py-3.5 shadow-sm">
+            <div class="rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
                 <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-base-content/45">Gender</p>
-                <div class="mt-1.5 flex items-center gap-4">
+                <div class="mt-2 flex items-center gap-4">
                     <span class="inline-flex items-center gap-1.5">
                         <x-gender-icon gender="Laki-laki" size="sm" />
                         <strong class="tabular-nums text-blue-600">{{ $stats['male'] }}</strong>
@@ -270,16 +270,16 @@ class extends Component {
                 </div>
             </div>
 
-            <div class="min-w-0 flex-1 basis-full rounded-2xl border border-base-300 bg-base-100 px-4 py-3.5 shadow-sm sm:basis-auto">
+            <div class="min-w-0 flex-1 basis-full rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm sm:basis-auto">
                 <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-base-content/45">Gereja lokal</p>
                 @if ($stats['churches']->isEmpty())
-                    <p class="mt-1.5 text-xs text-base-content/50">Belum ada data.</p>
+                    <p class="mt-2 text-xs text-base-content/50">Belum ada data.</p>
                 @else
-                    <div class="mt-2 flex flex-wrap gap-2">
+                    <div class="mt-2.5 flex flex-wrap gap-2">
                         @foreach ($stats['churches'] as $church)
                             <button
                                 type="button"
-                                class="inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs transition {{ $filterGereja === $church['name'] ? 'border-primary/50 bg-primary/10 font-semibold' : 'border-base-300 bg-base-200/60 hover:border-primary/30' }}"
+                                class="inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs transition {{ $filterGereja === $church['name'] ? 'border-primary/50 bg-primary/10 font-semibold' : 'border-base-300 bg-base-200/60 hover:border-primary/30' }}"
                                 wire:click="$set('filterGereja', '{{ $filterGereja === $church['name'] ? '' : $church['name'] }}')"
                             >
                                 <span>{{ $church['label'] }}</span>
@@ -291,29 +291,29 @@ class extends Component {
             </div>
         </div>
 
-        {{-- Filter: satu baris --}}
-        <div class="rounded-2xl border border-base-300 bg-base-100 p-3.5 shadow-sm sm:p-4">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center">
-                <div class="grid min-w-0 flex-1 grid-cols-2 gap-3 lg:grid-cols-4">
-                    <select class="select select-bordered select-sm min-h-10 w-full" wire:model.live="filterGereja" aria-label="Filter gereja">
+        {{-- Filter --}}
+        <div class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <div class="grid min-w-0 flex-1 grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <select class="select select-bordered min-h-11 w-full" wire:model.live="filterGereja" aria-label="Filter gereja">
                         @foreach ($gerejaOptions as $option)
                             <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                         @endforeach
                     </select>
 
-                    <select class="select select-bordered select-sm min-h-10 w-full" wire:model.live="filterGender" aria-label="Filter gender">
+                    <select class="select select-bordered min-h-11 w-full" wire:model.live="filterGender" aria-label="Filter gender">
                         @foreach ($genderOptions as $option)
                             <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                         @endforeach
                     </select>
 
-                    <select class="select select-bordered select-sm min-h-10 w-full" wire:model.live="filterTeam" aria-label="Filter tim">
+                    <select class="select select-bordered min-h-11 w-full" wire:model.live="filterTeam" aria-label="Filter tim">
                         @foreach ($teamFilterOptions as $option)
                             <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                         @endforeach
                     </select>
 
-                    <select class="select select-bordered select-sm min-h-10 w-full" wire:model.live="sortBy" aria-label="Urutkan">
+                    <select class="select select-bordered min-h-11 w-full" wire:model.live="sortBy" aria-label="Urutkan">
                         @foreach ($sortOptions as $option)
                             <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                         @endforeach
@@ -322,7 +322,7 @@ class extends Component {
 
                 <button
                     type="button"
-                    class="btn btn-ghost btn-sm min-h-10 shrink-0"
+                    class="btn btn-ghost min-h-11 shrink-0"
                     wire:click="resetFilters"
                 >
                     <x-icon name="o-arrow-path" class="h-4 w-4" />
@@ -331,13 +331,13 @@ class extends Component {
             </div>
         </div>
 
-        <x-card shadow class="!p-4">
+        <x-card shadow class="!p-5">
             @if ($rows->isEmpty())
                 <div class="py-10 text-center text-base-content/60">
                     Belum ada pendaftar{{ ($search || $filterGereja || $filterGender || $filterTeam) ? ' untuk filter ini' : '' }}.
                 </div>
             @else
-                <div class="mb-3 text-sm text-base-content/60">
+                <div class="mb-4 text-sm text-base-content/60">
                     Menampilkan <strong class="text-base-content">{{ $rows->count() }}</strong> pendaftar
                 </div>
                 <div class="overflow-x-auto">
