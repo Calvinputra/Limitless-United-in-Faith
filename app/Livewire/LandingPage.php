@@ -130,8 +130,8 @@ class LandingPage extends Component
 
         return view('livewire.landing-page', [
             'bankName' => Setting::getValue('bank_name', 'BCA'),
-            'bankAccount' => Setting::getValue('bank_account', '1234567890'),
-            'bankHolder' => Setting::getValue('bank_holder', 'Panitia Limitless'),
+            'bankAccount' => Setting::getValue('bank_account', '4660260451'),
+            'bankHolder' => Setting::getValue('bank_holder', 'Vera Lisiani Bong'),
             'transferAmountLabel' => 'Rp '.number_format($amount, 0, ',', '.'),
         ]);
     }
