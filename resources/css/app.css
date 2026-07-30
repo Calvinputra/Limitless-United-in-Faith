@@ -58,6 +58,14 @@
     --teal: #0f766e;
     --teal-deep: #0b5a54;
     --gold-soft: #c4a35a;
+
+    /* Palet dawn dari banner hero */
+    --dawn-sky: #e4edf7;
+    --dawn-cloud: #f1f5fa;
+    --dawn-glow: #fbf1de;
+    --dawn-sand: #f6ecd8;
+    --dawn-mist: #dfe9f4;
+    --dawn-slate: #b9cee6;
 }
 
 html {
@@ -121,7 +129,40 @@ html {
     display: block;
     width: 100%;
     height: 56px;
-    color: #f7fafb;
+    color: var(--dawn-sky);
+}
+
+/*
+ * Sapuan "fajar di lembah" yang meneruskan palet banner hero.
+ * Warna batas tiap sapuan dibuat sama supaya sambungan antar section tak terlihat,
+ * apa pun tinggi kontennya.
+ */
+.dawn-sky-wash {
+    background:
+        radial-gradient(80% 40% at 8% 0%, rgba(190, 214, 241, 0.6), transparent 62%),
+        radial-gradient(80% 40% at 92% 4%, rgba(182, 208, 238, 0.55), transparent 60%),
+        linear-gradient(180deg, var(--dawn-sky) 0%, var(--dawn-cloud) 100%);
+}
+
+.dawn-glow-wash {
+    background:
+        radial-gradient(90% 60% at 50% 88%, rgba(251, 236, 208, 0.95), transparent 72%),
+        linear-gradient(180deg, var(--dawn-cloud) 0%, var(--dawn-glow) 100%);
+}
+
+.dawn-valley-wash {
+    background:
+        radial-gradient(70% 45% at 50% 0%, rgba(246, 227, 190, 0.7), transparent 70%),
+        linear-gradient(180deg, var(--dawn-glow) 0%, var(--dawn-sand) 40%, var(--dawn-mist) 100%);
+}
+
+.dawn-dusk-wash {
+    background: linear-gradient(180deg, var(--dawn-mist) 0%, var(--dawn-slate) 100%);
+}
+
+.dawn-panel {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(6px);
 }
 
 .music-dock {
@@ -260,9 +301,10 @@ html {
 
 .form-glow {
     background:
-        radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 40%),
-        radial-gradient(circle at bottom left, rgba(196, 163, 90, 0.12), transparent 35%),
-        #f7fafb;
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.1), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(196, 163, 90, 0.14), transparent 35%),
+        rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(8px);
 }
 
 .limitless-form form {

@@ -1,17 +1,17 @@
-<div class="relative overflow-x-hidden bg-[#e6eef3] text-[#1a2433]">
+<div class="relative overflow-x-hidden bg-[#e4edf7] text-[#1a2433]">
     {{-- HERO --}}
     <header class="relative flex min-h-[100svh] items-end overflow-hidden text-[#f7fafb]">
         <img
-            src="{{ asset('images/hero-fellowship.jpg') }}?v=4"
+            src="{{ asset('images/new_banner.jpeg') }}?v=4"
             alt="Sahabat bergandengan dalam kebersamaan"
             class="hero-kenburns absolute inset-0 h-full w-full object-cover object-[center_40%]"
         >
-        <div class="absolute inset-0 bg-gradient-to-b from-[#1a2433]/20 via-[#1a2433]/40 to-[#0f1c26]/86"></div>
-        <div class="absolute inset-0 bg-gradient-to-tr from-teal-900/15 via-transparent to-sky-200/10"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/15 via-[#1e3a5f]/38 to-[#16283c]/85"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-[#1e3a5f]/15 via-transparent to-[#f6ecd8]/15"></div>
         <div class="hero-shimmer absolute inset-0 opacity-15 mix-blend-soft-light"></div>
 
-        <div class="orb -left-10 top-24 h-40 w-40 bg-teal-200/30"></div>
-        <div class="orb right-0 bottom-32 h-48 w-48 bg-amber-100/20" style="animation-delay: 1.5s"></div>
+        <div class="orb -left-10 top-24 h-40 w-40 bg-sky-200/30"></div>
+        <div class="orb right-0 bottom-32 h-48 w-48 bg-amber-100/25" style="animation-delay: 1.5s"></div>
 
         <div class="relative z-10 mx-auto w-full max-w-xl px-5 pb-12 pt-28">
             <p class="font-display text-[clamp(3.25rem,15vw,5.4rem)] font-semibold leading-[0.9] tracking-[-0.03em]" style="animation: rise-in 1s ease-out both">
@@ -56,8 +56,8 @@
     </svg>
 
     {{-- AYAT --}}
-    <section id="firman" class="relative bg-[#f7fafb] px-5 pb-16 pt-6">
-        <div class="orb left-1/2 top-0 h-56 w-56 -translate-x-1/2 bg-teal-200/35"></div>
+    <section id="firman" class="dawn-sky-wash relative px-5 pb-16 pt-6">
+        <div class="orb left-1/2 top-0 h-56 w-56 -translate-x-1/2 bg-sky-200/40"></div>
         <div class="reveal relative mx-auto max-w-xl">
             <p class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-teal-800/80">
                 Yesaya 43:19
@@ -73,10 +73,9 @@
     </section>
 
     {{-- MAKNA --}}
-    <section class="relative overflow-hidden px-5 py-16">
-        <div class="absolute inset-0 bg-gradient-to-br from-[#dff0ec] via-[#e6eef3] to-[#f3efe6]"></div>
-        <div class="orb -right-8 top-10 h-44 w-44 bg-teal-300/30"></div>
-        <div class="orb -left-10 bottom-0 h-52 w-52 bg-amber-200/25" style="animation-delay: 2s"></div>
+    <section class="dawn-glow-wash relative overflow-hidden px-5 py-16">
+        <div class="orb -right-8 top-10 h-44 w-44 bg-amber-200/30"></div>
+        <div class="orb -left-10 bottom-0 h-52 w-52 bg-sky-300/25" style="animation-delay: 2s"></div>
 
         <div class="reveal relative mx-auto max-w-xl">
             <h2 class="font-display text-3xl tracking-tight text-[#1a2433] sm:text-4xl">
@@ -88,15 +87,15 @@
             </p>
 
             <div class="reveal reveal-delay-2 mt-8 grid gap-3 sm:grid-cols-3">
-                <div class="rounded-2xl border border-white/70 bg-white/70 p-4 backdrop-blur-sm">
+                <div class="dawn-panel rounded-2xl border border-white/70 p-4">
                     <p class="font-display text-lg text-teal-800">Berjumpa</p>
                     <p class="mt-1 text-sm text-[#4a5a6d]">Mengenal hati satu sama lain dengan tulus.</p>
                 </div>
-                <div class="rounded-2xl border border-white/70 bg-white/70 p-4 backdrop-blur-sm">
+                <div class="dawn-panel rounded-2xl border border-white/70 p-4">
                     <p class="font-display text-lg text-teal-800">Berdoa</p>
                     <p class="mt-1 text-sm text-[#4a5a6d]">Menjadi sandaran iman di musim apa pun.</p>
                 </div>
-                <div class="rounded-2xl border border-white/70 bg-white/70 p-4 backdrop-blur-sm">
+                <div class="dawn-panel rounded-2xl border border-white/70 p-4">
                     <p class="font-display text-lg text-teal-800">Bertumbuh</p>
                     <p class="mt-1 text-sm text-[#4a5a6d]">Melangkah ke hal baru yang Tuhan bukakan.</p>
                 </div>
@@ -105,7 +104,7 @@
     </section>
 
     {{-- FORM --}}
-    <section id="daftar" class="relative px-5 pb-12 pt-3">
+    <section id="daftar" class="dawn-valley-wash relative px-5 pb-12 pt-3">
         <div class="reveal mx-auto max-w-xl">
             <div class="mb-2">
                 <h2 class="font-display text-3xl tracking-tight text-[#1a2433] sm:text-4xl">Siap bergabung?</h2>
@@ -322,8 +321,8 @@
         </div>
     </section>
 
-    <footer class="px-5 pb-24 pt-2">
-        <div class="reveal mx-auto max-w-xl border-t border-slate-300/60 pt-8">
+    <footer class="dawn-dusk-wash px-5 pb-24 pt-2">
+        <div class="reveal mx-auto max-w-xl border-t border-white/60 pt-8">
             <p class="font-display text-2xl text-[#1a2433]">Limitless</p>
             <p class="mt-1 text-sm text-[#4a5a6d]">United in Faith</p>
         </div>
