@@ -51,9 +51,9 @@
         </div>
     </header>
 
-    <svg class="wave-divider -mt-px" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden="true">
+    {{-- <svg class="wave-divider -mt-px" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden="true">
         <path fill="currentColor" d="M0,32 C240,56 480,0 720,16 C960,32 1200,56 1440,24 L1440,56 L0,56 Z"></path>
-    </svg>
+    </svg> --}}
 
     {{-- AYAT --}}
     <section id="firman" class="dawn-sky-wash relative px-5 pb-16 pt-6">
