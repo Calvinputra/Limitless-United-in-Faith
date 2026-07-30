@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\FellowRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BuktiTfController extends Controller
 {
-    public function show(Request $request, FellowRegistration $registration): StreamedResponse
+    public function show(Request $request, FellowRegistration $registration): BinaryFileResponse
     {
         abort_unless($request->user() !== null, 403);
 
