@@ -202,7 +202,7 @@ class extends Component {
                         <x-input
                             label="Keterangan / remark"
                             wire:model="bank_remark"
-                            placeholder="Contoh: Cantumkan nama lengkap di berita transfer"
+                            placeholder="Berita Transfer: DM - (Gereja Lokal) (Contoh: DM - GMS CP)"
                         />
                         <label class="form-control w-full">
                             <span class="label-text mb-1.5 text-sm font-medium">
