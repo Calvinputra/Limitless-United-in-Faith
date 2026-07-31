@@ -40,7 +40,13 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            /*
+             * On Hostinger, set PUBLIC_STORAGE_PATH to a folder OUTSIDE public_html
+             * so Git deploy does not wipe bukti-tf uploads.
+             * Example:
+             * /home/u830608451/domains/aquamarine-lobster-598681.hostingersite.com/persistent/app/public
+             */
+            'root' => env('PUBLIC_STORAGE_PATH') ?: storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
