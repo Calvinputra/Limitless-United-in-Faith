@@ -125,6 +125,18 @@ class LandingPage extends Component
         $this->success('Pendaftaran berhasil diterima. Sampai jumpa di Limitless!', position: 'toast-bottom');
     }
 
+    public function getBeritaTransferProperty(): string
+    {
+        $nama = trim($this->nama);
+        $gereja = trim($this->gereja_lokal);
+
+        if ($nama === '' || $gereja === '') {
+            return '';
+        }
+
+        return $nama.' - '.GerejaOptionService::label($gereja);
+    }
+
     public function render()
     {
         $amount = (int) (Setting::getValue('transfer_amount', '150000') ?? '150000');
@@ -136,6 +148,7 @@ class LandingPage extends Component
             'bankHolder' => Setting::getValue('bank_holder', 'Vera Lisiani Bong'),
             'bankRemark' => $bankRemark,
             'bankRemarkHtml' => $this->formatBankRemark($bankRemark),
+            'beritaTransfer' => $this->beritaTransfer,
             'transferAmountLabel' => 'Rp '.number_format($amount, 0, ',', '.'),
         ]);
     }

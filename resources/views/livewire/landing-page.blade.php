@@ -132,7 +132,7 @@
                     <x-form wire:submit="submit" class="!gap-2.5">
                         <x-input
                             label="Nama"
-                            wire:model="nama"
+                            wire:model.live.debounce.200ms="nama"
                             placeholder="Nama lengkap"
                             icon="o-user"
                             required
@@ -205,7 +205,7 @@
 
                         <x-select
                             label="Gereja lokal"
-                            wire:model="gereja_lokal"
+                            wire:model.live="gereja_lokal"
                             :options="$this->gerejaOptions()"
                             placeholder="Pilih gereja lokal"
                             icon="o-building-library"
@@ -215,7 +215,7 @@
                         <div
                             wire:ignore.self
                             class="mt-1 rounded-xl border border-teal-800/15 bg-teal-50/80 px-3.5 py-3"
-                            x-data="{ copied: false }"
+                            x-data="{ copiedAccount: false, copiedBerita: false }"
                         >
                             <div class="flex items-start justify-between gap-2">
                                 <p class="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-teal-800/80">Transfer ke</p>
@@ -227,25 +227,50 @@
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <p class="min-w-0">
                                         <span class="opacity-60">No. rekening</span> ·
-                                        <strong id="bank-account-value" class="tracking-wide">{{ $bankAccount }}</strong>
+                                        <strong class="tracking-wide">{{ $bankAccount }}</strong>
                                     </p>
                                     <button
                                         type="button"
                                         class="inline-flex items-center gap-1 rounded-lg border border-teal-800/20 bg-white px-2.5 py-1 text-xs font-semibold text-teal-800"
                                         x-on:click="
-                                            navigator.clipboard.writeText('{{ $bankAccount }}').then(() => {
-                                                copied = true;
-                                                setTimeout(() => copied = false, 1800);
-                                            }).catch(() => {
-                                                copied = true;
-                                                setTimeout(() => copied = false, 1800);
-                                            })
+                                            navigator.clipboard.writeText(@js($bankAccount)).then(() => {
+                                                copiedAccount = true;
+                                                setTimeout(() => copiedAccount = false, 1800);
+                                            }).catch(() => {})
                                         "
                                     >
-                                        <span x-text="copied ? 'Tersalin' : 'Salin'"></span>
+                                        <span x-text="copiedAccount ? 'Tersalin' : 'Salin'"></span>
                                     </button>
                                 </div>
                                 <p><span class="opacity-60">Atas nama</span> · <strong>{{ $bankHolder }}</strong></p>
+
+                                {{-- Auto: Nama - Gereja Lokal + copy --}}
+                                <div class="mt-2 rounded-lg border border-teal-800/10 bg-white/70 px-2.5 py-2">
+                                    <p class="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-teal-800/70">Berita transfer (salin)</p>
+                                    @if ($beritaTransfer !== '')
+                                        <div class="mt-1.5 flex items-start gap-2">
+                                            <p class="min-w-0 flex-1 text-sm font-semibold leading-snug text-[#1a2433]">{{ $beritaTransfer }}</p>
+                                            <button
+                                                type="button"
+                                                class="inline-flex shrink-0 items-center gap-1 rounded-lg border border-teal-800/20 bg-white px-2.5 py-1 text-xs font-semibold text-teal-800"
+                                                x-on:click="
+                                                    navigator.clipboard.writeText(@js($beritaTransfer)).then(() => {
+                                                        copiedBerita = true;
+                                                        setTimeout(() => copiedBerita = false, 1800);
+                                                    }).catch(() => {})
+                                                "
+                                            >
+                                                <span x-text="copiedBerita ? 'Tersalin' : 'Salin'"></span>
+                                            </button>
+                                        </div>
+                                    @else
+                                        <p class="mt-1 text-xs leading-relaxed text-[#4a5a6d]">
+                                            Format: <strong>Nama - Gereja Lokal</strong>. Isi nama &amp; pilih gereja di atas dulu.
+                                        </p>
+                                    @endif
+                                </div>
+
+                                {{-- Manual remark dari admin --}}
                                 @if ($bankRemark !== '')
                                     <div class="mt-1.5 rounded-lg border border-teal-800/10 bg-white/60 px-2.5 py-2">
                                         <p class="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-teal-800/70">Keterangan</p>
