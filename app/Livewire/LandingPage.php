@@ -132,6 +132,7 @@ class LandingPage extends Component
             'bankName' => Setting::getValue('bank_name', 'BCA'),
             'bankAccount' => Setting::getValue('bank_account', '4660260451'),
             'bankHolder' => Setting::getValue('bank_holder', 'Vera Lisiani Bong'),
+            'bankRemark' => trim((string) (Setting::getValue('bank_remark', '') ?? '')),
             'transferAmountLabel' => 'Rp '.number_format($amount, 0, ',', '.'),
         ]);
     }

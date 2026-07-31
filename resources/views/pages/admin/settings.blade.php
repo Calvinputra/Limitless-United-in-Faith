@@ -21,6 +21,8 @@ class extends Component {
 
     public string $bank_holder = 'Vera Lisiani Bong';
 
+    public string $bank_remark = '';
+
     public string $transfer_amount = '150.000';
 
     /** @var list<string> */
@@ -41,6 +43,7 @@ class extends Component {
         $this->bank_name = Setting::getValue('bank_name', 'BCA') ?? 'BCA';
         $this->bank_account = Setting::getValue('bank_account', '4660260451') ?? '4660260451';
         $this->bank_holder = Setting::getValue('bank_holder', 'Vera Lisiani Bong') ?? 'Vera Lisiani Bong';
+        $this->bank_remark = Setting::getValue('bank_remark', '') ?? '';
         $this->transfer_amount = $this->formatRupiah(
             max(0, (int) (Setting::getValue('transfer_amount', '150000') ?? '150000'))
         );
@@ -88,6 +91,7 @@ class extends Component {
             'bank_name' => 'required|string|min:2|max:80',
             'bank_account' => ['required', 'string', 'min:5', 'max:40', 'regex:/^[0-9\-\s]+$/'],
             'bank_holder' => 'required|string|min:3|max:120',
+            'bank_remark' => 'nullable|string|max:240',
             'transfer_amount' => 'required|string|min:1',
         ], [
             'bank_account.regex' => 'Nomor rekening hanya boleh angka.',
@@ -103,9 +107,11 @@ class extends Component {
         Setting::setValue('bank_name', trim($validated['bank_name']));
         Setting::setValue('bank_account', preg_replace('/\s+/', '', $validated['bank_account']) ?? $validated['bank_account']);
         Setting::setValue('bank_holder', trim($validated['bank_holder']));
+        Setting::setValue('bank_remark', trim((string) ($validated['bank_remark'] ?? '')));
         Setting::setValue('transfer_amount', (string) $amount);
 
         $this->bank_account = Setting::getValue('bank_account', $this->bank_account) ?? $this->bank_account;
+        $this->bank_remark = Setting::getValue('bank_remark', $this->bank_remark) ?? $this->bank_remark;
         $this->transfer_amount = $this->formatRupiah($amount);
         $this->openPayment = false;
         $this->success('Pembayaran disimpan.', position: 'toast-bottom');
@@ -174,6 +180,9 @@ class extends Component {
                     <span class="block text-sm font-semibold text-base-content">Pembayaran</span>
                     <span class="mt-0.5 block truncate text-xs text-base-content/55">
                         {{ $bank_name }} · {{ $bank_account }} · {{ $bank_holder }} · {{ $amountLabel }}
+                        @if (trim($bank_remark) !== '')
+                            · {{ $bank_remark }}
+                        @endif
                     </span>
                 </span>
                 <x-icon
@@ -190,6 +199,11 @@ class extends Component {
                             <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
                         </div>
                         <x-input label="Atas nama" wire:model="bank_holder" placeholder="Vera Lisiani Bong" required />
+                        <x-input
+                            label="Keterangan / remark"
+                            wire:model="bank_remark"
+                            placeholder="Contoh: Cantumkan nama lengkap di berita transfer"
+                        />
                         <label class="form-control w-full">
                             <span class="label-text mb-1.5 text-sm font-medium">
                                 Nominal <span class="text-error">*</span>

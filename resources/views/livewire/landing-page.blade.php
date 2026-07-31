@@ -246,6 +246,9 @@
                                     </button>
                                 </div>
                                 <p><span class="opacity-60">Atas nama</span> · <strong>{{ $bankHolder }}</strong></p>
+                                @if ($bankRemark !== '')
+                                    <p><span class="opacity-60">Keterangan</span> · <strong>{{ $bankRemark }}</strong></p>
+                                @endif
                             </div>
                         </div>
 
