@@ -249,7 +249,9 @@
                                 @if ($bankRemark !== '')
                                     <div class="mt-1.5 rounded-lg border border-teal-800/10 bg-white/60 px-2.5 py-2">
                                         <p class="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-teal-800/70">Keterangan</p>
-                                        <p class="mt-1 whitespace-pre-line text-sm leading-relaxed text-[#1a2433]">{{ $bankRemark }}</p>
+                                        <div class="bank-remark mt-1 text-sm leading-relaxed text-[#1a2433]">
+                                            {!! $bankRemarkHtml !!}
+                                        </div>
                                     </div>
                                 @endif
                             </div>

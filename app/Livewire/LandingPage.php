@@ -6,6 +6,7 @@ use App\Models\FellowRegistration;
 use App\Models\Setting;
 use App\Services\GerejaOptionService;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -127,13 +128,31 @@ class LandingPage extends Component
     public function render()
     {
         $amount = (int) (Setting::getValue('transfer_amount', '150000') ?? '150000');
+        $bankRemark = trim((string) (Setting::getValue('bank_remark', '') ?? ''));
 
         return view('livewire.landing-page', [
             'bankName' => Setting::getValue('bank_name', 'BCA'),
             'bankAccount' => Setting::getValue('bank_account', '4660260451'),
             'bankHolder' => Setting::getValue('bank_holder', 'Vera Lisiani Bong'),
-            'bankRemark' => trim((string) (Setting::getValue('bank_remark', '') ?? '')),
+            'bankRemark' => $bankRemark,
+            'bankRemarkHtml' => $this->formatBankRemark($bankRemark),
             'transferAmountLabel' => 'Rp '.number_format($amount, 0, ',', '.'),
+        ]);
+    }
+
+    private function formatBankRemark(string $remark): string
+    {
+        if ($remark === '') {
+            return '';
+        }
+
+        // Satu Enter = baris baru (markdown hard break), **tebal**, *miring*
+        $normalized = str_replace(["\r\n", "\r"], "\n", $remark);
+        $normalized = preg_replace("/\n/", "  \n", $normalized) ?? $normalized;
+
+        return Str::markdown($normalized, [
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
         ]);
     }
 }

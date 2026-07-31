@@ -181,7 +181,7 @@ class extends Component {
                     <span class="mt-0.5 block truncate text-xs text-base-content/55">
                         {{ $bank_name }} · {{ $bank_account }} · {{ $bank_holder }} · {{ $amountLabel }}
                         @if (trim($bank_remark) !== '')
-                            · {{ $bank_remark }}
+                            · {{ \Illuminate\Support\Str::of($bank_remark)->replaceMatches('/\s+/', ' ')->limit(60) }}
                         @endif
                     </span>
                 </span>
@@ -205,9 +205,11 @@ class extends Component {
                                 class="textarea textarea-bordered min-h-32 w-full leading-relaxed"
                                 rows="5"
                                 wire:model="bank_remark"
-                                placeholder="Pastikan foto/screenshot bukti transfer menampilkan:&#10;✓ Nominal berakhiran 001&#10;✓ Berita transfer bertuliskan DM - (Nama Gereja Lokal)&#10;(Format file: JPG, PNG, atau PDF. Maksimal 4 MB)"
+                                placeholder="Pastikan foto/screenshot bukti transfer menampilkan:&#10;**✓ Nominal berakhiran 001**&#10;*✓ Berita transfer: DM - (Nama Gereja Lokal)*&#10;(Format file: JPG, PNG, atau PDF. Maksimal 4 MB)"
                             ></textarea>
-                            <span class="mt-1 text-xs text-base-content/50">Bisa Enter untuk baris baru. Tampil di landing di bawah atas nama.</span>
+                            <span class="mt-1 text-xs text-base-content/50">
+                                Enter = baris baru · <strong>**tebal**</strong> · <em>*miring*</em>
+                            </span>
                             @error('bank_remark')
                                 <span class="mt-1 text-sm text-error">{{ $message }}</span>
                             @enderror

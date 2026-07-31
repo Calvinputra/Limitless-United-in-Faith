@@ -307,6 +307,22 @@ html {
     backdrop-filter: blur(8px);
 }
 
+.bank-remark p {
+    margin: 0;
+}
+
+.bank-remark p + p {
+    margin-top: 0.35rem;
+}
+
+.bank-remark strong {
+    font-weight: 700;
+}
+
+.bank-remark em {
+    font-style: italic;
+}
+
 .limitless-form form {
     gap: 0.7rem !important;
 }
