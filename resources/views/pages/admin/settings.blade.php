@@ -91,7 +91,7 @@ class extends Component {
             'bank_name' => 'required|string|min:2|max:80',
             'bank_account' => ['required', 'string', 'min:5', 'max:40', 'regex:/^[0-9\-\s]+$/'],
             'bank_holder' => 'required|string|min:3|max:120',
-            'bank_remark' => 'nullable|string|max:240',
+            'bank_remark' => 'nullable|string|max:2000',
             'transfer_amount' => 'required|string|min:1',
         ], [
             'bank_account.regex' => 'Nomor rekening hanya boleh angka.',
@@ -199,11 +199,19 @@ class extends Component {
                             <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
                         </div>
                         <x-input label="Atas nama" wire:model="bank_holder" placeholder="Vera Lisiani Bong" required />
-                        <x-input
-                            label="Keterangan / remark"
-                            wire:model="bank_remark"
-                            placeholder="Berita Transfer: DM - (Gereja Lokal) (Contoh: DM - GMS CP)"
-                        />
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1.5 text-sm font-medium">Keterangan / remark</span>
+                            <textarea
+                                class="textarea textarea-bordered min-h-32 w-full leading-relaxed"
+                                rows="5"
+                                wire:model="bank_remark"
+                                placeholder="Pastikan foto/screenshot bukti transfer menampilkan:&#10;✓ Nominal berakhiran 001&#10;✓ Berita transfer bertuliskan DM - (Nama Gereja Lokal)&#10;(Format file: JPG, PNG, atau PDF. Maksimal 4 MB)"
+                            ></textarea>
+                            <span class="mt-1 text-xs text-base-content/50">Bisa Enter untuk baris baru. Tampil di landing di bawah atas nama.</span>
+                            @error('bank_remark')
+                                <span class="mt-1 text-sm text-error">{{ $message }}</span>
+                            @enderror
+                        </label>
                         <label class="form-control w-full">
                             <span class="label-text mb-1.5 text-sm font-medium">
                                 Nominal <span class="text-error">*</span>
