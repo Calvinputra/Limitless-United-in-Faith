@@ -72,7 +72,10 @@ class extends Component {
         $registration = FellowRegistration::query()->findOrFail($id);
 
         if (! $registration->hasBuktiTf()) {
-            $this->error('Bukti transfer tidak ditemukan di server.', position: 'toast-bottom');
+            $message = $registration->buktiTfMissing()
+                ? 'Path ada di database, tapi file fisiknya sudah hilang di server (storage).'
+                : 'Bukti transfer tidak ditemukan.';
+            $this->error($message, position: 'toast-bottom');
 
             return;
         }
@@ -161,6 +164,7 @@ class extends Component {
                     'team' => $item->team,
                     'team_label' => $item->teamLabel(),
                     'bukti_url' => $item->hasBuktiTf() ? route('admin.bukti-tf', $item) : null,
+                    'bukti_missing' => $item->buktiTfMissing(),
                     'bukti_is_pdf' => str($item->bukti_tf_path ?? '')->lower()->endsWith('.pdf'),
                     'created_at' => $item->created_at?->format('d M Y H:i'),
                 ];
@@ -400,6 +404,8 @@ class extends Component {
                                             >
                                                 Lihat
                                             </button>
+                                        @elseif ($row['bukti_missing'])
+                                            <span class="text-xs font-medium text-error/80" title="Ada di DB, file di storage hilang">File hilang</span>
                                         @else
                                             <span class="text-xs opacity-50">—</span>
                                         @endif
