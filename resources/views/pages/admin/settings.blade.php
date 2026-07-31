@@ -21,7 +21,7 @@ class extends Component {
 
     public string $bank_holder = 'Vera Lisiani Bong';
 
-    public int $transfer_amount = 150000;
+    public string $transfer_amount = '150.000';
 
     /** @var list<string> */
     public array $items = [];
@@ -41,10 +41,17 @@ class extends Component {
         $this->bank_name = Setting::getValue('bank_name', 'BCA') ?? 'BCA';
         $this->bank_account = Setting::getValue('bank_account', '4660260451') ?? '4660260451';
         $this->bank_holder = Setting::getValue('bank_holder', 'Vera Lisiani Bong') ?? 'Vera Lisiani Bong';
-        $this->transfer_amount = max(0, (int) (Setting::getValue('transfer_amount', '150000') ?? '150000'));
+        $this->transfer_amount = $this->formatRupiah(
+            max(0, (int) (Setting::getValue('transfer_amount', '150000') ?? '150000'))
+        );
 
         GerejaOptionService::ensureSeeded();
         $this->items = GerejaOptionService::all();
+    }
+
+    public function updatedTransferAmount(string $value): void
+    {
+        $this->transfer_amount = $this->formatRupiah($this->parseRupiah($value));
     }
 
     public function togglePayment(): void
@@ -75,22 +82,31 @@ class extends Component {
 
     public function savePayment(): void
     {
+        $amount = $this->parseRupiah($this->transfer_amount);
+
         $validated = $this->validate([
             'bank_name' => 'required|string|min:2|max:80',
             'bank_account' => ['required', 'string', 'min:5', 'max:40', 'regex:/^[0-9\-\s]+$/'],
             'bank_holder' => 'required|string|min:3|max:120',
-            'transfer_amount' => 'required|integer|min:1000|max:100000000',
+            'transfer_amount' => 'required|string|min:1',
         ], [
             'bank_account.regex' => 'Nomor rekening hanya boleh angka.',
-            'transfer_amount.min' => 'Nominal minimal Rp 1.000.',
+            'transfer_amount.required' => 'Nominal wajib diisi.',
         ]);
+
+        if ($amount < 1000 || $amount > 100000000) {
+            $this->addError('transfer_amount', 'Nominal harus antara Rp 1.000 dan Rp 100.000.000.');
+
+            return;
+        }
 
         Setting::setValue('bank_name', trim($validated['bank_name']));
         Setting::setValue('bank_account', preg_replace('/\s+/', '', $validated['bank_account']) ?? $validated['bank_account']);
         Setting::setValue('bank_holder', trim($validated['bank_holder']));
-        Setting::setValue('transfer_amount', (string) $validated['transfer_amount']);
+        Setting::setValue('transfer_amount', (string) $amount);
 
         $this->bank_account = Setting::getValue('bank_account', $this->bank_account) ?? $this->bank_account;
+        $this->transfer_amount = $this->formatRupiah($amount);
         $this->openPayment = false;
         $this->success('Pembayaran disimpan.', position: 'toast-bottom');
     }
@@ -120,12 +136,23 @@ class extends Component {
     public function with(): array
     {
         $names = collect($this->items)->map(fn ($item) => trim((string) $item))->filter();
+        $amount = $this->parseRupiah($this->transfer_amount);
 
         return [
-            'amountLabel' => 'Rp '.number_format($this->transfer_amount, 0, ',', '.'),
+            'amountLabel' => 'Rp '.$this->formatRupiah($amount),
             'gerejaCount' => $names->count(),
             'gerejaPreview' => $names->take(3)->implode(', '),
         ];
+    }
+
+    private function parseRupiah(string $value): int
+    {
+        return max(0, (int) preg_replace('/\D+/', '', $value));
+    }
+
+    private function formatRupiah(int $amount): string
+    {
+        return number_format($amount, 0, ',', '.');
     }
 }; ?>
 
@@ -163,14 +190,25 @@ class extends Component {
                             <x-input label="No. rek" wire:model="bank_account" placeholder="4660260451" inputmode="numeric" required />
                         </div>
                         <x-input label="Atas nama" wire:model="bank_holder" placeholder="Vera Lisiani Bong" required />
-                        <x-input
-                            label="Nominal (Rp)"
-                            type="number"
-                            wire:model.live="transfer_amount"
-                            min="1000"
-                            step="1000"
-                            required
-                        />
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1.5 text-sm font-medium">
+                                Nominal <span class="text-error">*</span>
+                            </span>
+                            <div class="relative">
+                                <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-base-content/55">Rp</span>
+                                <input
+                                    type="text"
+                                    inputmode="numeric"
+                                    class="input input-bordered w-full pl-10 tabular-nums"
+                                    wire:model.live.debounce.200ms="transfer_amount"
+                                    placeholder="100.000"
+                                    required
+                                >
+                            </div>
+                            @error('transfer_amount')
+                                <span class="mt-1 text-sm text-error">{{ $message }}</span>
+                            @enderror
+                        </label>
                         <div class="flex flex-wrap gap-2 pt-1">
                             <x-button label="Simpan" type="submit" class="btn-primary btn-sm" icon="o-check" spinner="savePayment" />
                             <x-button label="Tutup" type="button" class="btn-ghost btn-sm" wire:click="$set('openPayment', false)" />
