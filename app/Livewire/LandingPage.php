@@ -134,7 +134,7 @@ class LandingPage extends Component
             return '';
         }
 
-        return $nama.' - '.GerejaOptionService::label($gereja);
+        return $nama.' - '. 'GMS ' . GerejaOptionService::label($gereja);
     }
 
     public function render()
